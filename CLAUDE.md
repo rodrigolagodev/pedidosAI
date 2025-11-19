@@ -18,7 +18,7 @@ Pedidos is a web application that automates order management and delivery to sup
 
 ### Guidelines (Progressive Loading)
 
-- @guidelines/INDEX.toon - **Load this first** to find relevant guidelines
+- @.claude/guidelines/INDEX.toon - **Load this first** to find relevant guidelines
 
 The INDEX contains all 32 guidelines organized by category with IDs and topics.
 Load specific guidelines on-demand using the paths from the index.
@@ -26,19 +26,19 @@ Load specific guidelines on-demand using the paths from the index.
 **How to use:**
 
 1. Consult INDEX.toon to find the guideline ID or topic you need
-2. Load only that specific guideline: `@guidelines/[category]/[file].toon`
+2. Load only that specific guideline: `@.claude/guidelines/[category]/[file].toon`
 3. Use guideline IDs for cross-referencing
 
 **Quick topic lookup** (from INDEX, load with @):
 
-- naming → `code-naming` → `guidelines/03-code-standards/3.1-naming-conventions.toon`
-- typescript → `code-typescript` → `guidelines/03-code-standards/3.3-typescript-guidelines.toon`
-- components → `pat-react` → `guidelines/04-patterns/4.1-react-nextjs-patterns.toon`
-- database → `pat-supabase` → `guidelines/04-patterns/4.2-supabase-patterns.toon`
-- security → `qual-security` → `guidelines/05-quality/5.2-security-standards.toon`
-- testing → `qual-testing` → `guidelines/05-quality/5.1-testing-standards.toon`
-- ai/voice → `pat-ai` → `guidelines/04-patterns/4.3-ai-integration-patterns.toon`
-- auth → `arch-adr-007` → `guidelines/02-architecture/2.8-adr-007-authentication.toon`
+- naming → `code-naming` → `.claude/guidelines/03-code-standards/3.1-naming-conventions.toon`
+- typescript → `code-typescript` → `.claude/guidelines/03-code-standards/3.3-typescript-guidelines.toon`
+- components → `pat-react` → `.claude/guidelines/04-patterns/4.1-react-nextjs-patterns.toon`
+- database → `pat-supabase` → `.claude/guidelines/04-patterns/4.2-supabase-patterns.toon`
+- security → `qual-security` → `.claude/guidelines/05-quality/5.2-security-standards.toon`
+- testing → `qual-testing` → `.claude/guidelines/05-quality/5.1-testing-standards.toon`
+- ai/voice → `pat-ai` → `.claude/guidelines/04-patterns/4.3-ai-integration-patterns.toon`
+- auth → `arch-adr-007` → `.claude/guidelines/02-architecture/2.8-adr-007-authentication.toon`
 
 ### Subagents
 
@@ -103,7 +103,7 @@ Voice/Text → Groq Whisper → Gemini Parse → Classification → Human Review
 
 ### For Any Task
 
-1. Check relevant guidelines in `guidelines/` for standards
+1. Check relevant guidelines in `.claude/guidelines/` for standards
 2. Use `project-planner` for complex planning
 3. Use `code-orchestrator` to delegate to specialists
 4. **Always invoke `code-reviewer` after code changes**
@@ -164,7 +164,7 @@ npx supabase db push     # Apply migrations
 
 ## Important Paths
 
-- **Guidelines**: `guidelines/`
+- **Guidelines**: `.claude/guidelines/`
 - **Agents**: `.claude/agents/`
 - **App Router**: `src/app/`
 - **Components**: `src/components/`

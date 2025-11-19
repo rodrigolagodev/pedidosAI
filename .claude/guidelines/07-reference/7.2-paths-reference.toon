@@ -38,7 +38,7 @@ content:
       paths[8]:
         - path: .claude/agents/
           description: Subagent configurations
-        - path: guidelines/
+        - path: .claude/guidelines/
           description: Development guidelines
         - path: supabase/migrations/
           description: Database migrations

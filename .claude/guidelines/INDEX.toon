@@ -8,10 +8,10 @@ usage: |
   This index allows progressive context loading. Instead of loading all guidelines,
   Claude should:
   1. Consult this index to find relevant guidelines by ID or topic
-  2. Load only the specific guideline needed using @guidelines/[path]
+  2. Load only the specific guideline needed using @.claude/guidelines/[path]
   3. Reference guideline IDs for cross-linking
 
-  Example: For naming questions, load @guidelines/03-code-standards/3.1-naming-conventions.toon
+  Example: For naming questions, load @.claude/guidelines/03-code-standards/3.1-naming-conventions.toon
 
 categories[7]:
   - id: 01-project-foundation

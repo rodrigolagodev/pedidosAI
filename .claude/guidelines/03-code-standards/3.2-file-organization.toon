@@ -14,8 +14,8 @@ content:
       tree: |
         pedidos/
         ├── .claude/
-        │   └── agents/           # Subagent configurations
-        ├── guidelines/           # Development guidelines (TOON)
+        │   ├── agents/           # Subagent configurations
+        │   └── guidelines/       # Development guidelines (TOON)
         ├── src/
         │   ├── app/              # Next.js App Router
         │   │   ├── (auth)/       # Authenticated routes group
