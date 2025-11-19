@@ -1,6 +1,6 @@
 metadata:
   id: ref-commands
-  version: 1.0
+  version: 1.1
   lastUpdated: 2025-11-18
   references[0]:
 
@@ -11,50 +11,42 @@ content:
   sections[4]:
     - id: ref-cmd-dev
       title: Development
-      commands[6]:
-        - command: npm run dev
+      commands[5]:
+        - command: pnpm dev
           description: Start development server
-        - command: npm run build
+        - command: pnpm build
           description: Build for production
-        - command: npm run start
+        - command: pnpm start
           description: Start production server
-        - command: npm run lint
+        - command: pnpm lint
           description: Run ESLint
-        - command: npm run format
+        - command: pnpm format
           description: Run Prettier
-        - command: npm run type-check
-          description: Run TypeScript compiler
 
     - id: ref-cmd-test
       title: Testing
       commands[5]:
-        - command: npm run test
+        - command: pnpm test
           description: Run unit tests
-        - command: npm run test:watch
+        - command: pnpm test --watch
           description: Run tests in watch mode
-        - command: npm run test:coverage
+        - command: pnpm test:coverage
           description: Run tests with coverage
-        - command: npm run test:e2e
+        - command: pnpm test:e2e
           description: Run E2E tests (Playwright)
-        - command: npx playwright test --ui
+        - command: pnpm test:e2e:ui
           description: E2E tests with UI
 
     - id: ref-cmd-supabase
       title: Supabase
-      commands[7]:
-        - command: npx supabase start
-          description: Start local Supabase
-        - command: npx supabase stop
-          description: Stop local Supabase
-        - command: npx supabase db reset
-          description: Reset database
-        - command: npx supabase gen types typescript --local > src/types/database.ts
+      commands[4]:
+        - command: pnpm dlx supabase gen types typescript --project-id wdtjhxxqgwobalxizlic > src/types/database.ts
           description: Generate TypeScript types
-        - command: npx supabase migration new [name]
+        - command: pnpm dlx supabase migration new [name]
           description: Create new migration
-        - command: npx supabase db push
+        - command: pnpm dlx supabase db push
           description: Apply migrations
-        - command: npx supabase functions deploy
+        - command: pnpm dlx supabase functions deploy
           description: Deploy Edge Functions
 
     - id: ref-cmd-git

@@ -147,19 +147,18 @@ Refer to `TOON_REFERENCE.md` for complete specification.
 
 ```bash
 # Development
-npm run dev              # Start dev server
-npm run build            # Production build
-npm run lint             # ESLint
-npm run format           # Prettier
+pnpm dev                 # Start dev server
+pnpm build               # Production build
+pnpm lint                # ESLint
+pnpm format              # Prettier
 
 # Testing
-npm run test             # Unit tests
-npm run test:coverage    # With coverage
-npm run test:e2e         # E2E tests
+pnpm test                # Unit tests
+pnpm test:coverage       # With coverage
+pnpm test:e2e            # E2E tests
 
 # Supabase
-npx supabase gen types typescript --local > src/types/database.ts
-npx supabase db push     # Apply migrations
+pnpm dlx supabase gen types typescript --project-id wdtjhxxqgwobalxizlic > src/types/database.ts
 ```
 
 ## Important Paths
