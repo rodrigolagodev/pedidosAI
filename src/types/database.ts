@@ -16,6 +16,7 @@ export type Database = {
           invited_by: string;
           organization_id: string;
           role: Database['public']['Enums']['membership_role'];
+          token: string;
         };
         Insert: {
           accepted_at?: string | null;
@@ -26,6 +27,7 @@ export type Database = {
           invited_by: string;
           organization_id: string;
           role?: Database['public']['Enums']['membership_role'];
+          token?: string;
         };
         Update: {
           accepted_at?: string | null;
@@ -36,6 +38,7 @@ export type Database = {
           invited_by?: string;
           organization_id?: string;
           role?: Database['public']['Enums']['membership_role'];
+          token?: string;
         };
         Relationships: [
           {
@@ -234,6 +237,30 @@ export type Database = {
         };
         Relationships: [];
       };
+      profiles: {
+        Row: {
+          id: string;
+          full_name: string | null;
+          avatar_url: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id: string;
+          full_name?: string | null;
+          avatar_url?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          full_name?: string | null;
+          avatar_url?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       suppliers: {
         Row: {
           address: string | null;
@@ -307,8 +334,41 @@ export type Database = {
       };
     };
     Functions: {
+      accept_invitation: { Args: { invitation_token: string }; Returns: string };
       archive_old_order_items: { Args: Record<PropertyKey, never>; Returns: number };
       can_access_order: { Args: { order_id: string }; Returns: boolean };
+      create_organization_with_membership: {
+        Args: { org_name: string; org_slug?: string | null };
+        Returns: string;
+      };
+      generate_unique_slug: { Args: { org_name: string }; Returns: string };
+      get_invitation_by_token: {
+        Args: { invitation_token: string };
+        Returns: {
+          invitation_id: string;
+          organization_name: string;
+          organization_slug: string;
+          role: Database['public']['Enums']['membership_role'];
+          invited_by_name: string;
+          expires_at: string;
+          is_valid: boolean;
+          email: string;
+        }[];
+      };
+      get_user_organizations: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          organization_id: string;
+          organization_name: string;
+          organization_slug: string;
+          user_role: Database['public']['Enums']['membership_role'];
+          joined_at: string;
+        }[];
+      };
+      get_user_role: {
+        Args: { org_id: string };
+        Returns: Database['public']['Enums']['membership_role'] | null;
+      };
       is_admin_of: { Args: { org_id: string }; Returns: boolean };
       is_admin_of_order: { Args: { order_id: string }; Returns: boolean };
       is_member_of: { Args: { org_id: string }; Returns: boolean };
