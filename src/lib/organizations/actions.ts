@@ -45,11 +45,7 @@ export async function createOrganization(
   }
 
   // Get the slug for the created organization
-  const { data: org } = await supabase
-    .from('organizations')
-    .select('slug')
-    .eq('id', data)
-    .single();
+  const { data: org } = await supabase.from('organizations').select('slug').eq('id', data).single();
 
   revalidatePath('/', 'layout');
   return {
@@ -70,10 +66,7 @@ export async function updateOrganization(
 ): Promise<OrganizationActionResult> {
   const supabase = await createClient();
 
-  const { error } = await supabase
-    .from('organizations')
-    .update({ name })
-    .eq('id', organizationId);
+  const { error } = await supabase.from('organizations').update({ name }).eq('id', organizationId);
 
   if (error) {
     return {
@@ -197,9 +190,7 @@ export async function inviteMember(
 /**
  * Accept an invitation by token
  */
-export async function acceptInvitation(
-  token: string
-): Promise<OrganizationActionResult> {
+export async function acceptInvitation(token: string): Promise<OrganizationActionResult> {
   const supabase = await createClient();
 
   const { data, error } = await supabase.rpc('accept_invitation', {
@@ -220,11 +211,7 @@ export async function acceptInvitation(
   }
 
   // Get the slug for redirect
-  const { data: org } = await supabase
-    .from('organizations')
-    .select('slug')
-    .eq('id', data)
-    .single();
+  const { data: org } = await supabase.from('organizations').select('slug').eq('id', data).single();
 
   revalidatePath('/', 'layout');
   return {
@@ -324,15 +311,10 @@ export async function updateMemberRole(
 /**
  * Cancel a pending invitation
  */
-export async function cancelInvitation(
-  invitationId: string
-): Promise<OrganizationActionResult> {
+export async function cancelInvitation(invitationId: string): Promise<OrganizationActionResult> {
   const supabase = await createClient();
 
-  const { error } = await supabase
-    .from('invitations')
-    .delete()
-    .eq('id', invitationId);
+  const { error } = await supabase.from('invitations').delete().eq('id', invitationId);
 
   if (error) {
     return {
@@ -348,9 +330,7 @@ export async function cancelInvitation(
 /**
  * Reject an invitation by token (expires it immediately)
  */
-export async function rejectInvitation(
-  token: string
-): Promise<OrganizationActionResult> {
+export async function rejectInvitation(token: string): Promise<OrganizationActionResult> {
   const supabase = await createClient();
 
   // Set expires_at to now to invalidate the invitation
@@ -386,7 +366,6 @@ export async function getInvitationByToken(token: string) {
   }
 
   if (!data || data.length === 0) {
-    console.log('No invitation found for token:', token);
     return null;
   }
 

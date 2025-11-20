@@ -1,6 +1,7 @@
 import { getSession } from '@/lib/auth/session';
 import { getInvitationByToken } from '@/lib/organizations/actions';
 import { AcceptInvitationForm } from '@/components/auth/accept-invitation-form';
+import Link from 'next/link';
 
 interface InvitePageProps {
   params: Promise<{ token: string }>;
@@ -22,18 +23,16 @@ export default async function InvitePage({ params }: InvitePageProps) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 px-4 py-12">
         <div className="w-full max-w-md space-y-8 text-center">
-          <h1 className="text-2xl font-bold text-gray-900">
-            Invitación no encontrada
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-900">Invitación no encontrada</h1>
           <p className="text-gray-600">
             Esta invitación no existe, ha expirado o ya fue utilizada.
           </p>
-          <a
+          <Link
             href="/login"
             className="inline-block rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
           >
             Ir a iniciar sesión
-          </a>
+          </Link>
         </div>
       </div>
     );
@@ -43,19 +42,17 @@ export default async function InvitePage({ params }: InvitePageProps) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 px-4 py-12">
         <div className="w-full max-w-md space-y-8 text-center">
-          <h1 className="text-2xl font-bold text-gray-900">
-            Invitación expirada
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-900">Invitación expirada</h1>
           <p className="text-gray-600">
-            Esta invitación ha expirado. Solicita una nueva invitación al
-            administrador de <strong>{invitation.organization_name}</strong>.
+            Esta invitación ha expirado. Solicita una nueva invitación al administrador de{' '}
+            <strong>{invitation.organization_name}</strong>.
           </p>
-          <a
+          <Link
             href="/login"
             className="inline-block rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
           >
             Ir a iniciar sesión
-          </a>
+          </Link>
         </div>
       </div>
     );
@@ -72,33 +69,27 @@ export default async function InvitePage({ params }: InvitePageProps) {
             </h1>
             <p className="mt-2 text-gray-600">
               {invitation.invited_by_name} te ha invitado como{' '}
-              <strong>
-                {invitation.role === 'admin' ? 'Administrador' : 'Miembro'}
-              </strong>
+              <strong>{invitation.role === 'admin' ? 'Administrador' : 'Miembro'}</strong>
             </p>
-            <p className="mt-1 text-sm text-gray-500">
-              Invitación para: {invitation.email}
-            </p>
+            <p className="mt-1 text-sm text-gray-500">Invitación para: {invitation.email}</p>
           </div>
 
           <div className="space-y-4">
-            <p className="text-center text-sm text-gray-600">
-              ¿Deseas unirte a este equipo?
-            </p>
+            <p className="text-center text-sm text-gray-600">¿Deseas unirte a este equipo?</p>
 
             <div className="flex flex-col gap-3">
-              <a
+              <Link
                 href={`/register?email=${encodeURIComponent(invitation.email || '')}&invitation=${token}`}
                 className="flex w-full justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
               >
                 Aceptar invitación
-              </a>
-              <a
+              </Link>
+              <Link
                 href={`/invite/${token}/reject`}
                 className="flex w-full justify-center rounded-md border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-50"
               >
                 Rechazar invitación
-              </a>
+              </Link>
             </div>
 
             <p className="text-center text-xs text-gray-500">
@@ -120,9 +111,7 @@ export default async function InvitePage({ params }: InvitePageProps) {
           </h1>
           <p className="mt-2 text-gray-600">
             {invitation.invited_by_name} te ha invitado como{' '}
-            <strong>
-              {invitation.role === 'admin' ? 'Administrador' : 'Miembro'}
-            </strong>
+            <strong>{invitation.role === 'admin' ? 'Administrador' : 'Miembro'}</strong>
           </p>
         </div>
 

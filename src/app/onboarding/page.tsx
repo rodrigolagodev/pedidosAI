@@ -1,5 +1,6 @@
 import { getSessionOrRedirect, getUserOrganizations } from '@/lib/auth/session';
 import { OnboardingForm } from '@/components/auth/onboarding-form';
+import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
 export const metadata = {
@@ -51,12 +52,12 @@ export default async function OnboardingPage({
 
         {!isFirstOrg && (
           <div className="text-center">
-            <a
+            <Link
               href="/dashboard"
-              className="text-sm text-gray-600 hover:text-gray-500"
+              className="inline-block rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
             >
-              Cancelar y volver
-            </a>
+              Ir al Dashboard
+            </Link>
           </div>
         )}
       </div>

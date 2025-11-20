@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { rejectInvitation } from '@/lib/organizations/actions';
+import Link from 'next/link';
 
 export default function RejectInvitationPage() {
   const params = useParams();
@@ -39,15 +40,10 @@ export default function RejectInvitationPage() {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 px-4 py-12">
         <div className="w-full max-w-md space-y-6 text-center">
-          <div className="rounded-md bg-red-50 p-4 text-sm text-red-700">
-            {error}
-          </div>
-          <a
-            href="/"
-            className="inline-block text-sm text-blue-600 hover:text-blue-500"
-          >
+          <div className="rounded-md bg-red-50 p-4 text-sm text-red-700">{error}</div>
+          <Link href="/" className="inline-block text-sm text-blue-600 hover:text-blue-500">
             Volver al inicio
-          </a>
+          </Link>
         </div>
       </div>
     );
@@ -57,19 +53,14 @@ export default function RejectInvitationPage() {
     <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 px-4 py-12">
       <div className="w-full max-w-md space-y-6 text-center">
         <div className="rounded-md bg-gray-100 p-6">
-          <h1 className="text-xl font-semibold text-gray-900">
-            Invitación rechazada
-          </h1>
+          <h1 className="text-xl font-semibold text-gray-900">Invitación rechazada</h1>
           <p className="mt-2 text-sm text-gray-600">
             Has rechazado la invitación. El enlace ya no es válido.
           </p>
         </div>
-        <a
-          href="/"
-          className="inline-block text-sm text-blue-600 hover:text-blue-500"
-        >
+        <Link href="/" className="inline-block text-sm text-blue-600 hover:text-blue-500">
           Volver al inicio
-        </a>
+        </Link>
       </div>
     </div>
   );
