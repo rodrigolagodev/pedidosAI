@@ -259,6 +259,11 @@ export async function saveOrderItems(orderId: string, items: any[]) {
 /**
  * Finalize order and mark as ready to send
  */
+import { sendOrderEmail, OrderItemEmailData } from '@/lib/email/orders';
+
+/**
+ * Finalize order and mark as ready to send
+ */
 export async function finalizeOrder(orderId: string, items: any[]) {
     const supabase = await createClient();
 
@@ -272,7 +277,7 @@ export async function finalizeOrder(orderId: string, items: any[]) {
     // First save all items
     await saveOrderItems(orderId, items);
 
-    // Get order details for redirect
+    // Get order details for email and redirect
     const { data: order, error: fetchError } = await supabase
         .from('orders')
         .select('*, organization:organizations(*)')
@@ -283,22 +288,53 @@ export async function finalizeOrder(orderId: string, items: any[]) {
         throw new Error('Error al obtener datos del pedido');
     }
 
+    // Get items with supplier info for email
+    const { data: dbItems } = await supabase
+        .from('order_items')
+        .select(`
+            product,
+            quantity,
+            unit,
+            supplier:suppliers(name)
+        `)
+        .eq('order_id', orderId);
+
+    if (dbItems && dbItems.length > 0) {
+        // Prepare email data
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const emailItems: OrderItemEmailData[] = dbItems.map((item: any) => ({
+            product: item.product,
+            quantity: item.quantity,
+            unit: item.unit,
+            supplierName: item.supplier?.name || 'Sin proveedor',
+        }));
+
+        // Send email to user
+        if (user.email) {
+            await sendOrderEmail({
+                to: user.email,
+                orderId: order.id,
+                organizationName: (order.organization as any)?.name || 'Organización',
+                items: emailItems,
+            });
+        }
+    }
+
     // Then update status
     const { error } = await supabase
         .from('orders')
-        .update({ status: 'sent' as Database['public']['Enums']['order_status'] })
+        .update({
+            status: 'sent' as Database['public']['Enums']['order_status'],
+            sent_at: new Date().toISOString()
+        })
         .eq('id', orderId);
 
     if (error) {
         throw new Error('Error al finalizar pedido');
     }
 
-    const slug = (order.organization as any)?.slug;
-    if (slug) {
-        redirect(`/${slug}`);
-    } else {
-        redirect('/');
-    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    redirect(`/orders/${orderId}/confirmation` as any);
 }
 
 const supplierSchema = z.object({

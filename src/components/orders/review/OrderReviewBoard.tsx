@@ -227,7 +227,7 @@ export function OrderReviewBoard({ orderId, initialItems, suppliers: initialSupp
                             Guardar Cambios
                         </Button>
                         <Button onClick={handleFinalize} disabled={isFinalizing || isCancelling || unclassifiedItems.length > 0}>
-                            {isFinalizing ? 'Finalizando...' : 'Finalizar Pedido'}
+                            {isFinalizing ? 'Enviando...' : 'Enviar Pedido'}
                             <CheckCircle2 className="ml-2 h-4 w-4" />
                         </Button>
                     </div>
