@@ -3,6 +3,8 @@ import { getOrganizationBySlug } from '@/lib/auth/session';
 import Link from 'next/link';
 import { SupplierListItem } from '@/components/suppliers/supplier-list-item';
 import { notFound } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 
 export default async function SuppliersPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -17,22 +19,21 @@ export default async function SuppliersPage({ params }: { params: Promise<{ slug
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Proveedores</h1>
+        <h1 className="text-2xl font-bold text-foreground">Proveedores</h1>
         {organization.isAdmin && (
-          <Link
-            href={`/${slug}/suppliers/new`}
-            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
-          >
-            Nuevo Proveedor
-          </Link>
+          <Button asChild>
+            <Link href={`/${slug}/suppliers/new`}>
+              Nuevo Proveedor
+            </Link>
+          </Button>
         )}
       </div>
 
-      <div className="bg-white shadow overflow-hidden sm:rounded-md border border-gray-200">
+      <Card className="overflow-hidden">
         {suppliers.length === 0 ? (
-          <div className="p-6 text-center text-gray-500">No hay proveedores registrados.</div>
+          <div className="p-6 text-center text-muted-foreground">No hay proveedores registrados.</div>
         ) : (
-          <ul role="list" className="divide-y divide-gray-200">
+          <ul role="list" className="divide-y divide-border">
             {suppliers.map(supplier => (
               <SupplierListItem
                 key={supplier.id}
@@ -47,7 +48,7 @@ export default async function SuppliersPage({ params }: { params: Promise<{ slug
             ))}
           </ul>
         )}
-      </div>
+      </Card>
     </div>
   );
 }

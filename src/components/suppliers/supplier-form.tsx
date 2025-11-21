@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useState } from 'react';
 import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 // Duplicate schema here for client-side validation or import it if possible.
 // Importing from server action file might cause issues if it has 'use server'.
@@ -72,9 +73,9 @@ export function SupplierForm({ slug, initialData }: SupplierFormProps) {
     // Convert comma-separated keywords to array
     const keywords = formData.custom_keywords_input
       ? formData.custom_keywords_input
-          .split(',')
-          .map(k => k.trim())
-          .filter(k => k.length > 0)
+        .split(',')
+        .map(k => k.trim())
+        .filter(k => k.length > 0)
       : [];
 
     const data: FormData = {
@@ -98,7 +99,7 @@ export function SupplierForm({ slug, initialData }: SupplierFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 bg-white p-6 rounded-lg shadow">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 bg-card p-6 rounded-lg shadow border border-border">
       {error && (
         <div className="bg-red-50 border-l-4 border-red-400 p-4">
           <div className="flex">
@@ -112,7 +113,7 @@ export function SupplierForm({ slug, initialData }: SupplierFormProps) {
       <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
         {/* Name */}
         <div className="sm:col-span-3">
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="name" className="block text-sm font-medium text-foreground">
             Nombre
           </label>
           <div className="mt-1">
@@ -120,7 +121,7 @@ export function SupplierForm({ slug, initialData }: SupplierFormProps) {
               type="text"
               id="name"
               {...register('name')}
-              className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+              className="shadow-sm focus:ring-ring focus:border-ring block w-full sm:text-sm border-input rounded-md"
             />
             {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>}
           </div>
@@ -237,7 +238,7 @@ export function SupplierForm({ slug, initialData }: SupplierFormProps) {
           <label htmlFor="custom_keywords" className="block text-sm font-medium text-gray-700">
             Palabras Clave Personalizadas
           </label>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-sm text-muted-foreground">
             Ingresa palabras o términos separados por comas que el agente usará para identificar y
             asignar automáticamente items a este proveedor. Ejemplo: tomate, cebolla, papa
           </p>
@@ -254,19 +255,17 @@ export function SupplierForm({ slug, initialData }: SupplierFormProps) {
       </div>
 
       <div className="flex justify-end gap-4">
-        <Link
-          href={`/${slug}/suppliers`}
-          className="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-        >
-          Cancelar
-        </Link>
-        <button
+        <Button asChild variant="outline">
+          <Link href={`/${slug}/suppliers`}>
+            Cancelar
+          </Link>
+        </Button>
+        <Button
           type="submit"
           disabled={isSubmitting}
-          className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
         >
           {isSubmitting ? 'Guardando...' : 'Guardar'}
-        </button>
+        </Button>
       </div>
     </form>
   );

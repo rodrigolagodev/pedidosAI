@@ -1,395 +1,456 @@
-export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "13.0.5"
+  }
   public: {
     Tables: {
       invitations: {
         Row: {
-          accepted_at: string | null;
-          created_at: string;
-          email: string;
-          expires_at: string;
-          id: string;
-          invited_by: string;
-          organization_id: string;
-          role: Database['public']['Enums']['membership_role'];
-          token: string;
-        };
+          accepted_at: string | null
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          invited_by: string
+          organization_id: string
+          role: Database["public"]["Enums"]["membership_role"]
+          token: string
+        }
         Insert: {
-          accepted_at?: string | null;
-          created_at?: string;
-          email: string;
-          expires_at?: string;
-          id?: string;
-          invited_by: string;
-          organization_id: string;
-          role?: Database['public']['Enums']['membership_role'];
-          token?: string;
-        };
+          accepted_at?: string | null
+          created_at?: string
+          email: string
+          expires_at?: string
+          id?: string
+          invited_by: string
+          organization_id: string
+          role?: Database["public"]["Enums"]["membership_role"]
+          token?: string
+        }
         Update: {
-          accepted_at?: string | null;
-          created_at?: string;
-          email?: string;
-          expires_at?: string;
-          id?: string;
-          invited_by?: string;
-          organization_id?: string;
-          role?: Database['public']['Enums']['membership_role'];
-          token?: string;
-        };
+          accepted_at?: string | null
+          created_at?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          invited_by?: string
+          organization_id?: string
+          role?: Database["public"]["Enums"]["membership_role"]
+          token?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'invitations_organization_id_fkey';
-            columns: ['organization_id'];
-            isOneToOne: false;
-            referencedRelation: 'organizations';
-            referencedColumns: ['id'];
+            foreignKeyName: "invitations_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       memberships: {
         Row: {
-          id: string;
-          joined_at: string;
-          organization_id: string;
-          role: Database['public']['Enums']['membership_role'];
-          user_id: string;
-        };
+          id: string
+          joined_at: string
+          organization_id: string
+          role: Database["public"]["Enums"]["membership_role"]
+          user_id: string
+        }
         Insert: {
-          id?: string;
-          joined_at?: string;
-          organization_id: string;
-          role?: Database['public']['Enums']['membership_role'];
-          user_id: string;
-        };
+          id?: string
+          joined_at?: string
+          organization_id: string
+          role: Database["public"]["Enums"]["membership_role"]
+          user_id: string
+        }
         Update: {
-          id?: string;
-          joined_at?: string;
-          organization_id?: string;
-          role?: Database['public']['Enums']['membership_role'];
-          user_id?: string;
-        };
+          id?: string
+          joined_at?: string
+          organization_id?: string
+          role?: Database["public"]["Enums"]["membership_role"]
+          user_id?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'memberships_organization_id_fkey';
-            columns: ['organization_id'];
-            isOneToOne: false;
-            referencedRelation: 'organizations';
-            referencedColumns: ['id'];
+            foreignKeyName: "memberships_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
+      order_audio_files: {
+        Row: {
+          confidence_score: number | null
+          created_at: string
+          duration_seconds: number | null
+          error_message: string | null
+          file_size_bytes: number | null
+          id: string
+          order_id: string
+          original_filename: string
+          processed_at: string | null
+          status: string
+          storage_path: string
+          transcription_text: string | null
+        }
+        Insert: {
+          confidence_score?: number | null
+          created_at?: string
+          duration_seconds?: number | null
+          error_message?: string | null
+          file_size_bytes?: number | null
+          id?: string
+          order_id: string
+          original_filename: string
+          processed_at?: string | null
+          status?: string
+          storage_path: string
+          transcription_text?: string | null
+        }
+        Update: {
+          confidence_score?: number | null
+          created_at?: string
+          duration_seconds?: number | null
+          error_message?: string | null
+          file_size_bytes?: number | null
+          id?: string
+          order_id?: string
+          original_filename?: string
+          processed_at?: string | null
+          status?: string
+          storage_path?: string
+          transcription_text?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_audio_files_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       order_items: {
         Row: {
-          confidence_score: number | null;
-          created_at: string;
-          id: string;
-          order_id: string;
-          original_text: string | null;
-          product: string;
-          quantity: number;
-          supplier_id: string | null;
-          unit: Database['public']['Enums']['item_unit'];
-        };
+          confidence_score: number | null
+          created_at: string
+          id: string
+          order_id: string
+          original_text: string | null
+          product: string
+          quantity: number
+          supplier_id: string | null
+          unit: Database["public"]["Enums"]["item_unit"]
+        }
         Insert: {
-          confidence_score?: number | null;
-          created_at?: string;
-          id?: string;
-          order_id: string;
-          original_text?: string | null;
-          product: string;
-          quantity: number;
-          supplier_id?: string | null;
-          unit: Database['public']['Enums']['item_unit'];
-        };
+          confidence_score?: number | null
+          created_at?: string
+          id?: string
+          order_id: string
+          original_text?: string | null
+          product: string
+          quantity: number
+          supplier_id?: string | null
+          unit: Database["public"]["Enums"]["item_unit"]
+        }
         Update: {
-          confidence_score?: number | null;
-          created_at?: string;
-          id?: string;
-          order_id?: string;
-          original_text?: string | null;
-          product?: string;
-          quantity?: number;
-          supplier_id?: string | null;
-          unit?: Database['public']['Enums']['item_unit'];
-        };
+          confidence_score?: number | null
+          created_at?: string
+          id?: string
+          order_id?: string
+          original_text?: string | null
+          product?: string
+          quantity?: number
+          supplier_id?: string | null
+          unit?: Database["public"]["Enums"]["item_unit"]
+        }
         Relationships: [
           {
-            foreignKeyName: 'order_items_order_id_fkey';
-            columns: ['order_id'];
-            isOneToOne: false;
-            referencedRelation: 'orders';
-            referencedColumns: ['id'];
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'order_items_supplier_id_fkey';
-            columns: ['supplier_id'];
-            isOneToOne: false;
-            referencedRelation: 'suppliers';
-            referencedColumns: ['id'];
+            foreignKeyName: "order_items_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       orders: {
         Row: {
-          audio_url: string | null;
-          created_at: string;
-          created_by: string;
-          id: string;
-          organization_id: string;
-          status: Database['public']['Enums']['order_status'];
-          transcription: string | null;
-          updated_at: string;
-        };
+          created_at: string
+          id: string
+          organization_id: string
+          status: Database["public"]["Enums"]["order_status"]
+          updated_at: string
+          user_id: string
+        }
         Insert: {
-          audio_url?: string | null;
-          created_at?: string;
-          created_by: string;
-          id?: string;
-          organization_id: string;
-          status?: Database['public']['Enums']['order_status'];
-          transcription?: string | null;
-          updated_at?: string;
-        };
+          created_at?: string
+          id?: string
+          organization_id: string
+          status?: Database["public"]["Enums"]["order_status"]
+          updated_at?: string
+          user_id: string
+        }
         Update: {
-          audio_url?: string | null;
-          created_at?: string;
-          created_by?: string;
-          id?: string;
-          organization_id?: string;
-          status?: Database['public']['Enums']['order_status'];
-          transcription?: string | null;
-          updated_at?: string;
-        };
+          created_at?: string
+          id?: string
+          organization_id?: string
+          status?: Database["public"]["Enums"]["order_status"]
+          updated_at?: string
+          user_id?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'orders_organization_id_fkey';
-            columns: ['organization_id'];
-            isOneToOne: false;
-            referencedRelation: 'organizations';
-            referencedColumns: ['id'];
+            foreignKeyName: "orders_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
           },
-        ];
-      };
+        ]
+      }
       organizations: {
         Row: {
-          created_at: string;
-          created_by: string;
-          id: string;
-          name: string;
-          slug: string;
-          updated_at: string;
-        };
+          created_at: string
+          id: string
+          name: string
+          slug: string
+          updated_at: string
+        }
         Insert: {
-          created_at?: string;
-          created_by: string;
-          id?: string;
-          name: string;
-          slug: string;
-          updated_at?: string;
-        };
+          created_at?: string
+          id?: string
+          name: string
+          slug: string
+          updated_at?: string
+        }
         Update: {
-          created_at?: string;
-          created_by?: string;
-          id?: string;
-          name?: string;
-          slug?: string;
-          updated_at?: string;
-        };
-        Relationships: [];
-      };
-      profiles: {
-        Row: {
-          avatar_url: string | null;
-          created_at: string;
-          full_name: string | null;
-          id: string;
-          updated_at: string;
-        };
-        Insert: {
-          avatar_url?: string | null;
-          created_at?: string;
-          full_name?: string | null;
-          id: string;
-          updated_at?: string;
-        };
-        Update: {
-          avatar_url?: string | null;
-          created_at?: string;
-          full_name?: string | null;
-          id?: string;
-          updated_at?: string;
-        };
-        Relationships: [];
-      };
+          created_at?: string
+          id?: string
+          name?: string
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       suppliers: {
         Row: {
-          address: string | null;
-          category: Database['public']['Enums']['supplier_category'];
-          created_at: string;
-          custom_keywords: string[];
-          deleted_at: string | null;
-          email: string;
-          id: string;
-          name: string;
-          notes: string | null;
-          organization_id: string;
-          phone: string | null;
-          preferred_contact_method: Database['public']['Enums']['contact_method'];
-          updated_at: string;
-        };
+          category: Database["public"]["Enums"]["supplier_category"]
+          created_at: string
+          email: string | null
+          id: string
+          name: string
+          organization_id: string
+          phone: string | null
+          updated_at: string
+        }
         Insert: {
-          address?: string | null;
-          category: Database['public']['Enums']['supplier_category'];
-          created_at?: string;
-          custom_keywords?: string[];
-          deleted_at?: string | null;
-          email: string;
-          id?: string;
-          name: string;
-          notes?: string | null;
-          organization_id: string;
-          phone?: string | null;
-          preferred_contact_method: Database['public']['Enums']['contact_method'];
-          updated_at?: string;
-        };
+          category: Database["public"]["Enums"]["supplier_category"]
+          created_at?: string
+          email?: string | null
+          id?: string
+          name: string
+          organization_id: string
+          phone?: string | null
+          updated_at?: string
+        }
         Update: {
-          address?: string | null;
-          category?: Database['public']['Enums']['supplier_category'];
-          created_at?: string;
-          custom_keywords?: string[];
-          deleted_at?: string | null;
-          email?: string;
-          id?: string;
-          name?: string;
-          notes?: string | null;
-          organization_id?: string;
-          phone?: string | null;
-          preferred_contact_method?: Database['public']['Enums']['contact_method'];
-          updated_at?: string;
-        };
+          category?: Database["public"]["Enums"]["supplier_category"]
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string
+          organization_id?: string
+          phone?: string | null
+          updated_at?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'suppliers_organization_id_fkey';
-            columns: ['organization_id'];
-            isOneToOne: false;
-            referencedRelation: 'organizations';
-            referencedColumns: ['id'];
+            foreignKeyName: "suppliers_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
           },
-        ];
-      };
-    };
+        ]
+      }
+    }
     Views: {
-      [_ in never]: never;
-    };
+      [_ in never]: never
+    }
     Functions: {
-      accept_invitation: {
-        Args: {
-          token_uuid: string;
-        };
-        Returns: string;
-      };
-      archive_old_order_items: {
-        Args: Record<PropertyKey, never>;
-        Returns: undefined;
-      };
-      can_access_order: {
-        Args: {
-          order_uuid: string;
-        };
-        Returns: boolean;
-      };
-      create_organization_with_membership: {
-        Args: {
-          org_name: string;
-          org_slug: string;
-        };
-        Returns: string;
-      };
-      generate_unique_slug: {
-        Args: {
-          base_name: string;
-        };
-        Returns: string;
-      };
-      get_invitation_by_token: {
-        Args: {
-          token_uuid: string;
-        };
-        Returns: {
-          id: string;
-          email: string;
-          role: Database['public']['Enums']['membership_role'];
-          organization_id: string;
-          organization_name: string;
-          invited_by_name: string;
-        }[];
-      };
-      get_user_organizations: {
-        Args: Record<PropertyKey, never>;
-        Returns: {
-          organization_id: string;
-          organization_name: string;
-          organization_slug: string;
-          user_role: Database['public']['Enums']['membership_role'];
-          joined_at: string;
-        }[];
-      };
-      get_user_role: {
-        Args: {
-          org_id: string;
-        };
-        Returns: Database['public']['Enums']['membership_role'];
-      };
-      handle_invitation_after_profile: {
-        Args: Record<PropertyKey, never>;
-        Returns: undefined;
-      };
-      handle_new_user_invitations: {
-        Args: Record<PropertyKey, never>;
-        Returns: undefined;
-      };
-      is_admin_of: {
-        Args: {
-          org_id: string;
-        };
-        Returns: boolean;
-      };
-      is_admin_of_order: {
-        Args: {
-          order_uuid: string;
-        };
-        Returns: boolean;
-      };
-      is_member_of: {
-        Args: {
-          org_id: string;
-        };
-        Returns: boolean;
-      };
-      update_updated_at_column: {
-        Args: Record<PropertyKey, never>;
-        Returns: undefined;
-      };
-    };
+      [_ in never]: never
+    }
     Enums: {
-      contact_method: 'email' | 'whatsapp' | 'phone';
-      item_unit: 'kg' | 'g' | 'units' | 'dozen' | 'liters' | 'ml' | 'packages' | 'boxes';
-      membership_role: 'admin' | 'member';
-      order_status: 'draft' | 'review' | 'sent' | 'archived';
-      supplier_category:
-        | 'fruits_vegetables'
-        | 'meats'
-        | 'fish_seafood'
-        | 'dry_goods'
-        | 'dairy'
-        | 'beverages'
-        | 'cleaning'
-        | 'packaging'
-        | 'other';
-    };
+      contact_method: ["email"]
+      item_unit: [
+        "kg",
+        "g",
+        "units",
+        "dozen",
+        "liters",
+        "ml",
+        "packages",
+        "boxes"
+      ]
+      membership_role: ["admin", "member"]
+      order_status: ["draft", "review", "sent", "archived", "cancelled"]
+      supplier_category: [
+        "fruits_vegetables",
+        "meats",
+        "fish_seafood",
+        "dry_goods",
+        "dairy",
+        "beverages"
+      ]
+    }
     CompositeTypes: {
-      [_ in never]: never;
-    };
-  };
-};
+      [_ in never]: never
+    }
+  }
+}
+
+type PublicSchema = Database[Extract<keyof Database, "public">]
+
+export type Tables<
+  PublicTableNameOrOptions extends
+  | keyof (PublicSchema["Tables"] & PublicSchema["Views"])
+  | { schema: keyof Database },
+  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+  ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+    Database[PublicTableNameOrOptions["schema"]]["Views"])
+  : never = never,
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+  ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+    Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+  ? R
+  : never
+  : PublicTableNameOrOptions extends keyof (PublicSchema["Tables"] &
+    PublicSchema["Views"])
+  ? (PublicSchema["Tables"] &
+    PublicSchema["Views"])[PublicTableNameOrOptions] extends {
+      Row: infer R
+    }
+  ? R
+  : never
+  : never
+
+export type TablesInsert<
+  PublicTableNameOrOptions extends
+  | keyof PublicSchema["Tables"]
+  | { schema: keyof Database },
+  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+  ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+  : never = never,
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+    Insert: infer I
+  }
+  ? I
+  : never
+  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
+  ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+    Insert: infer I
+  }
+  ? I
+  : never
+  : never
+
+export type TablesUpdate<
+  PublicTableNameOrOptions extends
+  | keyof PublicSchema["Tables"]
+  | { schema: keyof Database },
+  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+  ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+  : never = never,
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+    Update: infer U
+  }
+  ? U
+  : never
+  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
+  ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+    Update: infer U
+  }
+  ? U
+  : never
+  : never
+
+export type Enums<
+  PublicEnumNameOrOptions extends
+  | keyof PublicSchema["Enums"]
+  | { schema: keyof Database },
+  EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
+  ? keyof Database[PublicEnumNameOrOptions["schema"]]["Enums"]
+  : never = never,
+> = PublicEnumNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
+  ? PublicSchema["Enums"][PublicEnumNameOrOptions]
+  : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+  | keyof PublicSchema["CompositeTypes"]
+  | { schema: keyof Database },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof Database
+  }
+  ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+  : never = never,
+> = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof PublicSchema["CompositeTypes"]
+  ? PublicSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+  : never
+
+export const Constants = {
+  public: {
+    Enums: {
+      contact_method: ["email"],
+      item_unit: [
+        "kg",
+        "g",
+        "units",
+        "dozen",
+        "liters",
+        "ml",
+        "packages",
+        "boxes",
+      ],
+      membership_role: ["admin", "member"],
+      order_status: ["draft", "review", "sent", "archived", "cancelled"],
+      supplier_category: [
+        "fruits_vegetables",
+        "meats",
+        "fish_seafood",
+        "dry_goods",
+        "dairy",
+        "beverages",
+      ],
+    },
+  },
+} as const
