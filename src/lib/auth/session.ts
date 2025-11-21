@@ -1,8 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
-import type { Database } from '@/types/database';
 
-type MembershipRole = Database['public']['Enums']['membership_role'];
+import type { MembershipRole } from '@/types/helpers';
 
 export interface UserSession {
   id: string;
@@ -163,7 +162,7 @@ export async function getUserRole(
   const supabase = await createClient();
 
   const { data, error } = await supabase.rpc('get_user_role', {
-    org_id: organizationId,
+    organization_id: organizationId,
   });
 
   if (error) {

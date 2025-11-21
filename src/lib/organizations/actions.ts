@@ -2,10 +2,9 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { revalidatePath } from 'next/cache';
-import type { Database } from '@/types/database';
 import { sendInvitationEmail } from '@/lib/email/resend';
 
-type MembershipRole = Database['public']['Enums']['membership_role'];
+import type { MembershipRole } from '@/types/helpers';
 
 export interface OrganizationActionResult {
   success: boolean;
@@ -29,6 +28,7 @@ export async function createOrganization(
   const { data, error } = await supabase.rpc('create_organization_with_membership', {
     org_name: name,
     org_slug: slug || '', // RPC expects string, not null
+    user_email: (await supabase.auth.getUser()).data.user?.email || '',
   });
 
   if (error) {
@@ -150,7 +150,7 @@ export async function inviteMember(
     .insert({
       organization_id: organizationId,
       email: email.toLowerCase(),
-      role,
+      role: role as MembershipRole,
       invited_by: user.id,
     })
     .select('token')
@@ -170,7 +170,7 @@ export async function inviteMember(
       inviterName: inviterProfile?.full_name || user.email || 'Un usuario',
       organizationName: orgData?.name || 'una organización',
       invitationToken: invitation.token,
-      role,
+      role: role as MembershipRole,
     });
   } catch (emailError) {
     // Log error but don't fail the invitation creation
@@ -194,7 +194,7 @@ export async function acceptInvitation(token: string): Promise<OrganizationActio
   const supabase = await createClient();
 
   const { data, error } = await supabase.rpc('accept_invitation', {
-    token_uuid: token,
+    token: token,
   });
 
   if (error) {
@@ -210,16 +210,16 @@ export async function acceptInvitation(token: string): Promise<OrganizationActio
     };
   }
 
-  // Get the slug for redirect
-  const { data: org } = await supabase.from('organizations').select('slug').eq('id', data).single();
+  if (!data) {
+    return {
+      success: false,
+      error: 'Error al aceptar la invitación',
+    };
+  }
 
   revalidatePath('/', 'layout');
   return {
     success: true,
-    data: {
-      organizationId: data,
-      slug: org?.slug,
-    },
   };
 }
 
@@ -293,7 +293,7 @@ export async function updateMemberRole(
 
   const { error } = await supabase
     .from('memberships')
-    .update({ role })
+    .update({ role: role as MembershipRole })
     .eq('organization_id', organizationId)
     .eq('user_id', userId);
 

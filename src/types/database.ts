@@ -294,12 +294,77 @@ export type Database = {
           },
         ]
       }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      accept_invitation: {
+        Args: {
+          token: string
+        }
+        Returns: boolean
+      }
+      create_organization_with_membership: {
+        Args: {
+          org_name: string
+          org_slug: string
+          user_email: string
+        }
+        Returns: string
+      }
+      get_user_organizations: {
+        Args: {
+          user_id: string
+        }
+        Returns: {
+          organization_id: string
+          organization_name: string
+          organization_slug: string
+          user_role: Database["public"]["Enums"]["membership_role"]
+        }[]
+      }
+      get_user_role: {
+        Args: {
+          organization_id: string
+        }
+        Returns: Database["public"]["Enums"]["membership_role"]
+      }
     }
     Enums: {
       contact_method: ["email"]
@@ -313,16 +378,18 @@ export type Database = {
         "packages",
         "boxes"
       ]
-      membership_role: ["admin", "member"]
+      membership_role: "admin" | "member"
       order_status: ["draft", "review", "sent", "archived", "cancelled"]
-      supplier_category: [
-        "fruits_vegetables",
-        "meats",
-        "fish_seafood",
-        "dry_goods",
-        "dairy",
-        "beverages"
-      ]
+      supplier_category:
+      | "fruits_vegetables"
+      | "meats"
+      | "fish_seafood"
+      | "dry_goods"
+      | "dairy"
+      | "beverages"
+      | "cleaning"
+      | "packaging"
+      | "other"
     }
     CompositeTypes: {
       [_ in never]: never
