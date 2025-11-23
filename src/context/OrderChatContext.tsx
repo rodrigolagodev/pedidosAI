@@ -17,6 +17,7 @@ interface OrderChatContextType {
   currentStatus: string; // 'listening' | 'transcribing' | 'parsing' | 'classifying' | 'idle'
   addMessage: (role: 'user' | 'assistant', content: string, audioFileId?: string) => Promise<void>;
   processAudio: (audioBlob: Blob) => Promise<void>;
+  processTranscription: (result: { transcription: string; audioFileId: string }) => Promise<void>;
   processText: (text: string) => Promise<void>;
   processOrder: () => Promise<void>;
 }
@@ -80,6 +81,14 @@ export function OrderChatProvider({
       if (!text.trim()) return;
       // Just add the message, no processing
       await addMessage('user', text);
+    },
+    [addMessage]
+  );
+
+  const processTranscription = useCallback(
+    async (result: { transcription: string; audioFileId: string }) => {
+      // The transcription is already done, just add the message
+      await addMessage('user', result.transcription, result.audioFileId);
     },
     [addMessage]
   );
@@ -201,6 +210,7 @@ export function OrderChatProvider({
         currentStatus,
         addMessage,
         processAudio,
+        processTranscription,
         processText,
         processOrder,
       }}
