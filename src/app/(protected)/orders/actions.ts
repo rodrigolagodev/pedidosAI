@@ -4,9 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { revalidatePath } from 'next/cache';
 import { parseOrderText } from '@/lib/ai/gemini';
 import { ClassifiedItem } from '@/lib/ai/classifier';
-// @ts-expect-error - Service layer modules
 import { OrderService } from '@/services/orders';
-// @ts-expect-error - Service layer modules
 import { JobQueue } from '@/services/queue';
 
 /**
@@ -371,12 +369,8 @@ export async function sendOrder(orderId: string) {
     await JobQueue.enqueue('SEND_SUPPLIER_ORDER', { supplierOrderId: supplierOrder.id });
   }
 
-  // 4. Optimistic Processing (Fire-and-forget)
-  // We don't await this to return quickly to the UI
-  JobQueue.processPending().catch(err => console.error('Background processing error:', err));
-
-  // 5. Update main order status to 'sending' immediately for UI feedback
-  // The JobQueue will update it to 'sent' when done
+  // 4. Update main order status to 'sending' immediately for UI feedback
+  // The cron job will process pending jobs and update status to 'sent' when done
   await supabase
     .from('orders')
     .update({ status: 'sending' }) // You might need to add 'sending' to the enum if not present, or just leave as is and let the job update it

@@ -1,5 +1,4 @@
 import { createClient } from '@/lib/supabase/server';
-// @ts-expect-error - Module resolution issue
 import { NotificationService } from '@/services/notifications';
 import { SupabaseClient } from '@supabase/supabase-js';
 
