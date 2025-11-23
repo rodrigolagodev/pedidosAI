@@ -72,6 +72,10 @@ export function OrderChatProvider({
       // Ensure order exists
       const currentOrderId = await ensureOrderExists();
 
+      // Generate sequence number based on current message count
+      // This ensures chronological ordering even if created_at has clock skew
+      const sequenceNumber = messages.length + 1;
+
       const tempId = crypto.randomUUID();
       const newMessage: Message = {
         id: tempId,
@@ -85,13 +89,13 @@ export function OrderChatProvider({
       setMessages(prev => [...prev, newMessage]);
 
       try {
-        await saveConversationMessage(currentOrderId, role, content, audioFileId);
+        await saveConversationMessage(currentOrderId, role, content, audioFileId, sequenceNumber);
       } catch (error) {
         console.error('Failed to save message:', error);
         toast.error('Error al guardar el mensaje');
       }
     },
-    [ensureOrderExists]
+    [ensureOrderExists, messages.length]
   );
 
   const processText = useCallback(

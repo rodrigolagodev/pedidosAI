@@ -57,7 +57,8 @@ export async function saveConversationMessage(
   orderId: string,
   role: 'user' | 'assistant',
   content: string,
-  audioFileId?: string
+  audioFileId?: string,
+  sequenceNumber?: number
 ) {
   const supabase = await createClient();
 
@@ -96,6 +97,7 @@ export async function saveConversationMessage(
     role,
     content,
     audio_file_id: audioFileId || null,
+    sequence_number: sequenceNumber || 0,
   });
 
   if (error) {
@@ -208,7 +210,7 @@ export async function processOrderBatch(orderId: string) {
     .select('content')
     .eq('order_id', orderId)
     .eq('role', 'user')
-    .order('created_at', { ascending: true });
+    .order('sequence_number', { ascending: true });
 
   if (!messages || messages.length === 0) {
     return { items: [], message: 'No hay mensajes para procesar.' };
@@ -306,7 +308,7 @@ export async function getOrderConversation(orderId: string) {
     `
     )
     .eq('order_id', orderId)
-    .order('created_at', { ascending: true });
+    .order('sequence_number', { ascending: true });
 
   if (error) {
     console.error('Error fetching conversation:', error);
