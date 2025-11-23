@@ -2,10 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { revalidatePath } from 'next/cache';
-import { parseOrderText } from '@/lib/ai/gemini';
 import { ClassifiedItem } from '@/lib/ai/classifier';
-import { OrderService } from '@/services/orders';
-import { JobQueue } from '@/services/queue';
 
 /**
  * Create a new draft order
@@ -92,18 +89,17 @@ export async function saveConversationMessage(
     throw new Error('Forbidden');
   }
 
-  const { error } = await supabase.from('order_conversations').insert({
-    order_id: orderId,
+  // Use command pattern to execute business logic
+  const { OrderCommands } = await import('@/application/commands/OrderCommands');
+  const commands = new OrderCommands(supabase);
+
+  await commands.addMessage({
+    orderId,
     role,
     content,
-    audio_file_id: audioFileId || null,
-    sequence_number: sequenceNumber || 0,
+    audioFileId,
+    sequenceNumber: sequenceNumber || 0,
   });
-
-  if (error) {
-    console.error('Error saving message:', error);
-    throw new Error('Failed to save message');
-  }
 }
 
 /**
@@ -204,63 +200,11 @@ export async function processOrderBatch(orderId: string) {
     throw new Error('Forbidden');
   }
 
-  // 2. Fetch all user messages
-  const { data: messages } = await supabase
-    .from('order_conversations')
-    .select('content')
-    .eq('order_id', orderId)
-    .eq('role', 'user')
-    .order('sequence_number', { ascending: true });
+  // 2. Use command pattern to execute business logic
+  const { OrderCommands } = await import('@/application/commands/OrderCommands');
+  const commands = new OrderCommands(supabase);
 
-  if (!messages || messages.length === 0) {
-    return { items: [], message: 'No hay mensajes para procesar.' };
-  }
-
-  // 3. Aggregate text
-  const fullText = messages.map(m => m.content).join('\n\n');
-
-  // 4. Fetch suppliers (needed for intelligent parsing)
-  const { data: suppliers } = await supabase
-    .from('suppliers')
-    .select('id, name, category, custom_keywords')
-    .eq('organization_id', order.organization_id);
-
-  // 5. Parse with Gemini (includes supplier classification)
-  const parsedItems = await parseOrderText(fullText, suppliers || []);
-
-  if (parsedItems.length === 0) {
-    return { items: [], message: 'No pude identificar productos en la conversación.' };
-  }
-
-  // 6. Map ParsedItem to ClassifiedItem format
-  // Gemini now returns supplier_id directly, so we just need to ensure the format
-  const classifiedItems = parsedItems.map(item => ({
-    ...item,
-    supplier_id: item.supplier_id || null,
-    classification_confidence: item.confidence, // Use Gemini's confidence as classification confidence
-  }));
-
-  // 7. Replace existing items (Transaction-like)
-  // First delete old items
-  await supabase.from('order_items').delete().eq('order_id', orderId);
-
-  // Then save new items
-  await saveParsedItems(orderId, classifiedItems);
-
-  // 8. Add assistant summary message
-  const itemCount = classifiedItems.length;
-  let summary = `He procesado todo el pedido. Encontré ${itemCount} producto${itemCount !== 1 ? 's' : ''}:\n\n`;
-
-  classifiedItems.forEach(item => {
-    const supplier = suppliers?.find(s => s.id === item.supplier_id);
-    const supplierName = supplier?.name || 'Sin proveedor';
-    summary += `- ${item.quantity} ${item.unit} de ${item.product} (${supplierName})\n`;
-  });
-
-  await saveConversationMessage(orderId, 'assistant', summary);
-
-  // Return redirect URL instead of redirecting directly to avoid client-side try-catch issues
-  return { success: true, redirectUrl: `/orders/${orderId}/review` };
+  return await commands.processOrder(orderId, order.organization_id);
 }
 
 /**
@@ -359,24 +303,11 @@ export async function sendOrder(orderId: string) {
     throw new Error('Order can only be sent from draft or review status');
   }
 
-  // 2. Create Supplier Orders (Idempotent)
-  const supplierOrders = await OrderService.createSupplierOrders(orderId);
+  // 2. Use command pattern to execute business logic
+  const { OrderCommands } = await import('@/application/commands/OrderCommands');
+  const commands = new OrderCommands(supabase);
 
-  if (supplierOrders.length === 0) {
-    throw new Error('No items found to send');
-  }
-
-  // 3. Enqueue Jobs
-  for (const supplierOrder of supplierOrders) {
-    await JobQueue.enqueue('SEND_SUPPLIER_ORDER', { supplierOrderId: supplierOrder.id });
-  }
-
-  // 4. Update main order status to 'sending' immediately for UI feedback
-  // The cron job will process pending jobs and update status to 'sent' when done
-  await supabase
-    .from('orders')
-    .update({ status: 'sending' }) // You might need to add 'sending' to the enum if not present, or just leave as is and let the job update it
-    .eq('id', orderId);
+  await commands.sendOrder(orderId);
 
   revalidatePath(`/orders/${orderId}`);
 
