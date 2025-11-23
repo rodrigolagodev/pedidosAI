@@ -8,12 +8,14 @@ import { TranscriptionResult } from '@/types/audio';
 
 interface VoiceRecorderButtonProps {
   orderId?: string;
+  ensureOrderId?: () => Promise<string>;
   onTranscriptionSuccess: (result: TranscriptionResult) => void;
   disabled?: boolean;
 }
 
 export function VoiceRecorderButton({
   orderId,
+  ensureOrderId,
   onTranscriptionSuccess,
   disabled = false,
 }: VoiceRecorderButtonProps) {
@@ -28,6 +30,7 @@ export function VoiceRecorderButton({
     canRetry,
   } = useAudioTranscription({
     orderId,
+    ensureOrderId,
     onSuccess: onTranscriptionSuccess,
     onError: error => {
       console.error('Audio transcription error:', error);

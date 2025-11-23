@@ -8,7 +8,8 @@ import { SendHorizontal } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 
 export function ChatInput() {
-  const { processText, processTranscription, isProcessing, orderId } = useOrderChat();
+  const { processText, processTranscription, isProcessing, orderId, ensureOrderExists } =
+    useOrderChat();
   const [input, setInput] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -70,6 +71,7 @@ export function ChatInput() {
 
         <VoiceRecorderButton
           orderId={orderId || undefined}
+          ensureOrderId={ensureOrderExists}
           onTranscriptionSuccess={processTranscription}
           disabled={input.length > 0} // Disable voice if typing
         />

@@ -15,6 +15,7 @@ interface OrderChatContextType {
   messages: Message[];
   isProcessing: boolean;
   currentStatus: string; // 'listening' | 'transcribing' | 'parsing' | 'classifying' | 'idle'
+  ensureOrderExists: () => Promise<string>;
   addMessage: (role: 'user' | 'assistant', content: string, audioFileId?: string) => Promise<void>;
   processAudio: (audioBlob: Blob) => Promise<void>;
   processTranscription: (result: { transcription: string; audioFileId: string }) => Promise<void>;
@@ -41,18 +42,25 @@ export function OrderChatProvider({
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentStatus, setCurrentStatus] = useState('idle');
 
+  const ensureOrderExists = useCallback(async () => {
+    // If order already exists, return it
+    if (orderId) {
+      return orderId;
+    }
+
+    // Create new order
+    const { createDraftOrder } = await import('@/app/(protected)/orders/actions');
+    const newOrder = await createDraftOrder(organizationId);
+    setOrderId(newOrder.id);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    router.replace(`/orders/${newOrder.id}` as any);
+    return newOrder.id;
+  }, [orderId, organizationId, router]);
+
   const addMessage = useCallback(
     async (role: 'user' | 'assistant', content: string, audioFileId?: string) => {
-      // Lazy order creation: if no orderId yet, create it now
-      let currentOrderId = orderId;
-      if (!currentOrderId) {
-        const { createDraftOrder } = await import('@/app/(protected)/orders/actions');
-        const newOrder = await createDraftOrder(organizationId);
-        currentOrderId = newOrder.id;
-        setOrderId(currentOrderId);
-        // Update URL to include the order ID
-        // router.replace(`/orders/${currentOrderId}` as any); // This is now handled by the component that calls addMessage
-      }
+      // Ensure order exists
+      const currentOrderId = await ensureOrderExists();
 
       const tempId = crypto.randomUUID();
       const newMessage: Message = {
@@ -73,7 +81,7 @@ export function OrderChatProvider({
         toast.error('Error al guardar el mensaje');
       }
     },
-    [orderId, organizationId]
+    [ensureOrderExists]
   );
 
   const processText = useCallback(
@@ -208,6 +216,7 @@ export function OrderChatProvider({
         messages,
         isProcessing,
         currentStatus,
+        ensureOrderExists,
         addMessage,
         processAudio,
         processTranscription,
