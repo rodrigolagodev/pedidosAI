@@ -54,16 +54,26 @@ export default async function HistoryPage({
       const month = parts[1];
       const day = parts[2];
 
-      // Construct date in local time (browser/server local)
-      // Month is 0-indexed
-      const start = new Date(year, month - 1, day);
-      start.setHours(0, 0, 0, 0);
+      // Validate that all parts are valid numbers
+      if (
+        year !== undefined &&
+        month !== undefined &&
+        day !== undefined &&
+        !isNaN(year) &&
+        !isNaN(month) &&
+        !isNaN(day)
+      ) {
+        // Construct date in local time (browser/server local)
+        // Month is 0-indexed
+        const start = new Date(year, month - 1, day);
+        start.setHours(0, 0, 0, 0);
 
-      const end = new Date(year, month - 1, day);
-      end.setHours(23, 59, 59, 999);
+        const end = new Date(year, month - 1, day);
+        end.setHours(23, 59, 59, 999);
 
-      filters.dateFrom = start;
-      filters.dateTo = end;
+        filters.dateFrom = start;
+        filters.dateTo = end;
+      }
     }
   }
 
