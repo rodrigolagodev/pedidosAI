@@ -16,16 +16,10 @@ export class JobQueue {
   static async enqueue(type: JobType, payload: JobPayload, client?: SupabaseClient) {
     const supabase = client ?? (await createClient());
 
-    // Get current user for RLS
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
     const { error } = await supabase.from('jobs').insert({
       type,
       payload,
       status: 'pending',
-      user_id: user?.id, // Nullable if system/admin
     });
 
     if (error) {
