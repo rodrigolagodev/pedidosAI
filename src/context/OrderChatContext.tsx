@@ -148,9 +148,10 @@ export function OrderChatProvider({
   );
 
   const processTranscription = useCallback(
-    async (result: { transcription: string; audioFileId: string }) => {
+    async (result: { transcription: string; audioFileId: string; orderId?: string }) => {
       // The transcription is already done, just add the message
-      await addMessage('user', result.transcription, result.audioFileId);
+      // Use the orderId from the result to prevent duplicate order creation
+      await addMessage('user', result.transcription, result.audioFileId, result.orderId);
     },
     [addMessage]
   );

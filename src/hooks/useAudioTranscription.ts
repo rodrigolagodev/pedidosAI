@@ -305,7 +305,13 @@ export function useAudioTranscription(options: UseAudioTranscriptionOptions = {}
           r => r.timestamp > oneHourAgo
         );
 
-        onSuccess?.({ transcription, audioFileId, confidence: 0.9, duration });
+        onSuccess?.({
+          transcription,
+          audioFileId,
+          confidence: 0.9,
+          duration,
+          orderId: currentOrderId,
+        });
       } catch (err) {
         const error: AudioError = {
           type: 'unknown',

@@ -89,4 +89,5 @@ export interface TranscriptionResult {
   audioFileId: string;
   confidence: number;
   duration: number;
+  orderId?: string; // The orderId used for creating/storing the audio
 }
