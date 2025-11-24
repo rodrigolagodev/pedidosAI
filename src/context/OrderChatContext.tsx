@@ -59,29 +59,30 @@ export function OrderChatProvider({
   }, [initialOrderId, orderId, setOrderId]);
 
   /**
-   * Wrapper around the hook's ensureOrderExists that adds
-   * the onOrderCreated callback notification
+   * Internal helper that returns both orderId and creation status
    */
-  const ensureOrderExists = useCallback(async (): Promise<string> => {
+  const ensureOrderExistsInternal = useCallback(async (): Promise<{
+    orderId: string;
+    wasCreated: boolean;
+  }> => {
     const wasCreated = !orderId;
     const currentOrderId = await ensureOrderExistsFromHook();
 
-    // Notify parent component about order creation
-    // Only notify if this call actually created the order
-    if (wasCreated && onOrderCreated) {
-      // Defer callback to avoid interrupting current operation
-      setTimeout(() => {
-        onOrderCreated(currentOrderId);
-      }, 0);
-    }
+    return { orderId: currentOrderId, wasCreated };
+  }, [orderId, ensureOrderExistsFromHook]);
 
+  /**
+   * Public API - returns only orderId for compatibility
+   */
+  const ensureOrderExists = useCallback(async (): Promise<string> => {
+    const { orderId: currentOrderId } = await ensureOrderExistsInternal();
     return currentOrderId;
-  }, [orderId, ensureOrderExistsFromHook, onOrderCreated]);
+  }, [ensureOrderExistsInternal]);
 
   const addMessage = useCallback(
     async (role: 'user' | 'assistant', content: string, audioFileId?: string) => {
       // Ensure order exists
-      const currentOrderId = await ensureOrderExists();
+      const { orderId: currentOrderId, wasCreated } = await ensureOrderExistsInternal();
 
       // Generate sequence number based on current message count
       // This ensures chronological ordering even if created_at has clock skew
@@ -101,12 +102,21 @@ export function OrderChatProvider({
 
       try {
         await saveConversationMessage(currentOrderId, role, content, audioFileId, sequenceNumber);
+
+        // Notify parent component about order creation AFTER message is saved
+        // This prevents router.replace from interrupting the message flow
+        if (wasCreated && onOrderCreated) {
+          // Defer to next tick to ensure message is in state
+          setTimeout(() => {
+            onOrderCreated(currentOrderId);
+          }, 0);
+        }
       } catch (error) {
         console.error('Failed to save message:', error);
         toast.error('Error al guardar el mensaje');
       }
     },
-    [ensureOrderExists, messages.length]
+    [ensureOrderExistsInternal, messages.length, onOrderCreated]
   );
 
   const processText = useCallback(
