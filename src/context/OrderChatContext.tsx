@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
+import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
 import { Database } from '@/types/database';
 import { saveConversationMessage } from '@/app/(protected)/orders/actions';
 import { toast } from 'sonner';
@@ -41,6 +41,13 @@ export function OrderChatProvider({
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentStatus, setCurrentStatus] = useState('idle');
 
+  // Debug logging to track component lifecycle
+  useEffect(() => {
+    console.error(
+      `[OrderChat] Component mounted. OrderId: ${orderId}, Initial messages: ${initialMessages.length}`
+    );
+  }, [orderId, initialMessages.length]);
+
   const addMessage = useCallback(
     async (role: 'user' | 'assistant', content: string, audioFileId?: string) => {
       // orderId is always available (eager creation)
@@ -65,14 +72,20 @@ export function OrderChatProvider({
           created_at: new Date().toISOString(),
         };
 
+        console.error(
+          `[OrderChat] Adding message #${sequenceNumber} to local state. Total messages: ${prev.length + 1}`
+        );
+
         return [...prev, newMessage];
       });
 
       try {
         // sequenceNumber is guaranteed to be set from setMessages above
+        console.error(`[OrderChat] Saving message #${sequenceNumber!} to DB. OrderId: ${orderId}`);
         await saveConversationMessage(orderId, role, content, audioFileId, sequenceNumber!);
+        console.error(`[OrderChat] Message #${sequenceNumber!} saved successfully`);
       } catch (error) {
-        console.error('Failed to save message:', error);
+        console.error(`[OrderChat] FAILED to save message #${sequenceNumber!}:`, error);
         toast.error('Error al guardar el mensaje');
       }
     },
