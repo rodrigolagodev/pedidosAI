@@ -2,6 +2,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* CSS Variables (Design Tokens) */
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -49,6 +50,7 @@
   }
 }
 
+/* Base Styles */
 @layer base {
   * {
     border-color: hsl(var(--border));
@@ -59,6 +61,7 @@
     color: hsl(var(--foreground));
   }
 
+  /* Form elements inherit theme colors */
   input,
   textarea,
   select {
@@ -70,7 +73,7 @@
     color: hsl(var(--muted-foreground));
   }
 
-  /* Standardize all form inputs */
+  /* Standardize form inputs with theme-aware backgrounds */
   input[type='text'],
   input[type='email'],
   input[type='password'],
@@ -81,7 +84,7 @@
   textarea,
   select {
     padding: 0.5rem 0.75rem;
-    background-color: white;
+    background-color: hsl(var(--background));
     color: hsl(var(--foreground));
     border: 1px solid hsl(var(--input));
     border-radius: 0.375rem;
@@ -102,17 +105,7 @@
   }
 }
 
-/* Ensure primary colors work */
-@layer utilities {
-  .bg-primary {
-    background-color: hsl(var(--primary));
-  }
-
-  .text-primary-foreground {
-    color: hsl(var(--primary-foreground));
-  }
-}
-
+/* Tailwind v4 Theme Configuration */
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -138,14 +131,4 @@
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
-}
-
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-
-  body {
-    @apply bg-background text-foreground;
-  }
 }

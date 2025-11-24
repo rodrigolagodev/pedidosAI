@@ -1,6 +1,13 @@
 'use client';
 
-import { DndContext, DragOverlay, SensorDescriptor, SensorOptions } from '@dnd-kit/core';
+import {
+  DndContext,
+  DragOverlay,
+  SensorDescriptor,
+  SensorOptions,
+  DragStartEvent,
+  DragEndEvent,
+} from '@dnd-kit/core';
 import { Button } from '@/components/ui/button';
 import { SupplierSection } from './SupplierSection';
 import { UnclassifiedSection } from './UnclassifiedSection';
@@ -39,8 +46,8 @@ interface OrderReviewViewProps {
 
   // Handlers
   handleSupplierCreated: (newSupplier?: Supplier) => void;
-  handleDragStart: (event: unknown) => void;
-  handleDragEnd: (event: unknown) => void;
+  handleDragStart: (event: DragStartEvent) => void;
+  handleDragEnd: (event: DragEndEvent) => void;
   handleUpdateItem: (itemId: string, data: Partial<OrderItem>) => Promise<void>;
   handleDeleteItem: (itemId: string) => Promise<void>;
   handleAddItem: (
