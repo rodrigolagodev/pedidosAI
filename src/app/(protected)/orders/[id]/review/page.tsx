@@ -1,5 +1,5 @@
 import { getOrderReview } from '../actions';
-import { OrderReviewBoard } from '@/components/orders/review/OrderReviewBoard';
+import { OrderReviewBoard } from '@/features/orders/components/review/OrderReviewBoard';
 import { redirect } from 'next/navigation';
 
 interface PageProps {

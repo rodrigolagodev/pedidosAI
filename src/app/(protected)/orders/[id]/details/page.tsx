@@ -1,5 +1,5 @@
 import { getOrderDetails } from '../actions';
-import { ReadOnlyOrderView } from '@/components/orders/review/ReadOnlyOrderView';
+import { ReadOnlyOrderView } from '@/features/orders/components/review/ReadOnlyOrderView';
 import { redirect, notFound } from 'next/navigation';
 
 interface PageProps {

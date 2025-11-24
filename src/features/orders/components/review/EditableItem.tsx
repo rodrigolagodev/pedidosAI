@@ -78,7 +78,7 @@ export function EditableItem({ item, onUpdate, onDelete }: EditableItemProps) {
             type="number"
             value={values.quantity}
             onChange={e => setValues({ ...values, quantity: Number(e.target.value) })}
-            className="h-8"
+            className="h-10 md:h-8 text-base md:text-sm"
             onKeyDown={handleKeyDown}
             autoFocus
           />
@@ -92,7 +92,7 @@ export function EditableItem({ item, onUpdate, onDelete }: EditableItemProps) {
                 unit: e.target.value as Database['public']['Enums']['item_unit'],
               })
             }
-            className="h-8 w-full rounded-md border border-input bg-background px-2 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+            className="h-10 md:h-8 w-full rounded-md border border-input bg-background px-2 py-1 text-base md:text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
             onKeyDown={handleKeyDown}
           >
             <option value="units">Unidades</option>
@@ -109,7 +109,7 @@ export function EditableItem({ item, onUpdate, onDelete }: EditableItemProps) {
           <Input
             value={values.product}
             onChange={e => setValues({ ...values, product: e.target.value })}
-            className="h-8"
+            className="h-10 md:h-8 text-base md:text-sm"
             onKeyDown={handleKeyDown}
             placeholder="Nombre del producto"
           />
@@ -118,20 +118,20 @@ export function EditableItem({ item, onUpdate, onDelete }: EditableItemProps) {
           <Button
             size="icon"
             variant="ghost"
-            className="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-50"
+            className="h-10 w-10 md:h-8 md:w-8 text-green-600 hover:text-green-700 hover:bg-green-50"
             onClick={handleSave}
             disabled={isSaving}
           >
-            <Check className="h-4 w-4" />
+            <Check className="h-5 w-5 md:h-4 md:w-4" />
           </Button>
           <Button
             size="icon"
             variant="ghost"
-            className="h-8 w-8 text-muted-foreground hover:text-destructive"
+            className="h-10 w-10 md:h-8 md:w-8 text-muted-foreground hover:text-destructive"
             onClick={handleCancel}
             disabled={isSaving}
           >
-            <X className="h-4 w-4" />
+            <X className="h-5 w-5 md:h-4 md:w-4" />
           </Button>
         </div>
       </div>
