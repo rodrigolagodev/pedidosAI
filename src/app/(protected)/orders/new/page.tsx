@@ -33,6 +33,27 @@ export default async function NewOrderPage() {
     );
   }
 
+  // Check if user has a recent draft order (created in last 24 hours)
+  // If so, redirect to continue that conversation instead of creating a new one
+  const twentyFourHoursAgo = new Date();
+  twentyFourHoursAgo.setHours(twentyFourHoursAgo.getHours() - 24);
+
+  const { data: recentDraft } = await supabase
+    .from('orders')
+    .select('id')
+    .eq('organization_id', membership.organization_id)
+    .eq('created_by', user.id)
+    .eq('status', 'draft')
+    .gte('created_at', twentyFourHoursAgo.toISOString())
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .single();
+
+  // If user refreshed with a recent draft, redirect to continue it
+  if (recentDraft) {
+    redirect(`/orders/${recentDraft.id}`);
+  }
+
   // We don't create the order immediately anymore (Lazy Creation)
   // We pass the organizationId so the context can create it when needed
 

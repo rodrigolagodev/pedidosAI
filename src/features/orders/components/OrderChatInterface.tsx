@@ -28,14 +28,12 @@ export function OrderChatInterface({
 }: OrderChatInterfaceProps) {
   const router = useRouter();
 
-  const handleOrderCreated = useCallback(
-    (newOrderId: string) => {
-      // Navigate to the new order page
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      router.replace(`/orders/${newOrderId}` as any);
-    },
-    [router]
-  );
+  const handleOrderCreated = useCallback((newOrderId: string) => {
+    // Don't change URL during conversation (ChatGPT-style UX)
+    // This prevents input focus loss and provides fluid experience
+    // URL will update when user processes the order or refreshes
+    console.log('Order created:', newOrderId);
+  }, []);
 
   const handleOrderProcessed = useCallback(
     (redirectUrl: string) => {
