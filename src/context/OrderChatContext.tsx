@@ -141,17 +141,28 @@ export function OrderChatProvider({
   const processText = useCallback(
     async (text: string) => {
       if (!text.trim()) return;
-      // Just add the message, no processing
-      await addMessage('user', text);
+
+      setIsProcessing(true);
+      try {
+        // Just add the message, no processing
+        await addMessage('user', text);
+      } finally {
+        setIsProcessing(false);
+      }
     },
     [addMessage]
   );
 
   const processTranscription = useCallback(
     async (result: { transcription: string; audioFileId: string; orderId?: string }) => {
-      // The transcription is already done, just add the message
-      // Use the orderId from the result to prevent duplicate order creation
-      await addMessage('user', result.transcription, result.audioFileId, result.orderId);
+      setIsProcessing(true);
+      try {
+        // The transcription is already done, just add the message
+        // Use the orderId from the result to prevent duplicate order creation
+        await addMessage('user', result.transcription, result.audioFileId, result.orderId);
+      } finally {
+        setIsProcessing(false);
+      }
     },
     [addMessage]
   );
