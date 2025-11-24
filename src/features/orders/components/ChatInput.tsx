@@ -12,8 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
  * when orderId changes in the context (which doesn't affect this component's UI)
  */
 export const ChatInput = memo(function ChatInput() {
-  const { processText, processTranscription, isProcessing, orderId, ensureOrderExists } =
-    useOrderChat();
+  const { processText, processTranscription, isProcessing, orderId } = useOrderChat();
   const [input, setInput] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -74,8 +73,7 @@ export const ChatInput = memo(function ChatInput() {
         </div>
 
         <VoiceRecorderButton
-          orderId={orderId || undefined}
-          ensureOrderId={ensureOrderExists}
+          orderId={orderId}
           onTranscriptionSuccess={processTranscription}
           disabled={input.length > 0} // Disable voice if typing
         />

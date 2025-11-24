@@ -14,7 +14,7 @@ import { Database } from '@/types/database';
 type Message = Database['public']['Tables']['order_conversations']['Row'];
 
 interface OrderChatInterfaceProps {
-  orderId: string | null;
+  orderId: string;
   initialMessages: Message[];
   organizationSlug: string;
   organizationId: string;
@@ -27,13 +27,6 @@ export function OrderChatInterface({
   organizationId,
 }: OrderChatInterfaceProps) {
   const router = useRouter();
-
-  const handleOrderCreated = useCallback((newOrderId: string) => {
-    // Don't change URL during conversation (ChatGPT-style UX)
-    // This prevents input focus loss and provides fluid experience
-    // URL will update when user processes the order or refreshes
-    console.log('Order created:', newOrderId);
-  }, []);
 
   const handleOrderProcessed = useCallback(
     (redirectUrl: string) => {
@@ -49,7 +42,6 @@ export function OrderChatInterface({
       orderId={orderId}
       initialMessages={initialMessages}
       organizationId={organizationId}
-      onOrderCreated={handleOrderCreated}
       onOrderProcessed={handleOrderProcessed}
     >
       <div className="flex flex-col h-[calc(100vh-4rem)] bg-background">

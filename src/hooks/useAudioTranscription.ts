@@ -69,14 +69,13 @@ function checkRateLimit(processedRecordings: ProcessedRecording[]): AudioError |
 }
 
 interface UseAudioTranscriptionOptions {
-  orderId?: string;
-  ensureOrderId?: () => Promise<string>; // Called when orderId is needed but not provided
+  orderId: string;
   onSuccess?: (result: TranscriptionResult) => void;
   onError?: (error: AudioError) => void;
 }
 
-export function useAudioTranscription(options: UseAudioTranscriptionOptions = {}) {
-  const { orderId, ensureOrderId, onSuccess, onError } = options;
+export function useAudioTranscription(options: UseAudioTranscriptionOptions) {
+  const { orderId, onSuccess, onError } = options;
 
   const [state, setState] = useState<AudioState>({ status: 'idle' });
 
@@ -215,40 +214,12 @@ export function useAudioTranscription(options: UseAudioTranscriptionOptions = {}
 
         currentHashRef.current = blobHash;
 
-        // 3. Get or ensure orderId
-        let currentOrderId = orderId;
-        if (!currentOrderId && ensureOrderId) {
-          try {
-            currentOrderId = await ensureOrderId();
-          } catch {
-            const error: AudioError = {
-              type: 'upload_failed',
-              message: 'No se pudo crear la orden',
-              retryCount: 0,
-            };
-            setState({ status: 'error', error, blob, retryable: true });
-            onError?.(error);
-            return;
-          }
-        }
-
-        if (!currentOrderId) {
-          const error: AudioError = {
-            type: 'upload_failed',
-            message: 'No hay orden disponible para guardar el audio',
-            retryCount: 0,
-          };
-          setState({ status: 'error', error, blob, retryable: false });
-          onError?.(error);
-          return;
-        }
-
-        // 4. Upload
+        // 3. Upload (orderId is always available with eager creation)
         setState({ status: 'uploading', blob, progress: 0 });
 
         const formData = new FormData();
         formData.append('audio', blob, 'recording.webm');
-        formData.append('orderId', currentOrderId);
+        formData.append('orderId', orderId);
 
         const response = await fetch('/api/process-audio', {
           method: 'POST',
@@ -310,7 +281,7 @@ export function useAudioTranscription(options: UseAudioTranscriptionOptions = {}
           audioFileId,
           confidence: 0.9,
           duration,
-          orderId: currentOrderId,
+          orderId,
         });
       } catch (err) {
         const error: AudioError = {
@@ -321,7 +292,7 @@ export function useAudioTranscription(options: UseAudioTranscriptionOptions = {}
         onError?.(error);
       }
     },
-    [orderId, ensureOrderId, onSuccess, onError]
+    [orderId, onSuccess, onError]
   );
 
   /**

@@ -1,27 +1,20 @@
 'use client';
 
-import React, { createContext, useContext, useState, useCallback, useEffect, useMemo } from 'react';
+import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
 import { Database } from '@/types/database';
 import { saveConversationMessage } from '@/app/(protected)/orders/actions';
 import { toast } from 'sonner';
-import { useOrderLifecycle } from '@/hooks/useOrderLifecycle';
 
 type Message = Database['public']['Tables']['order_conversations']['Row'] & {
   audio_file?: Database['public']['Tables']['order_audio_files']['Row'] | null;
 };
 
 interface OrderChatContextType {
-  orderId: string | null;
+  orderId: string;
   messages: Message[];
   isProcessing: boolean;
   currentStatus: string; // 'listening' | 'transcribing' | 'parsing' | 'classifying' | 'idle'
-  ensureOrderExists: () => Promise<string>;
-  addMessage: (
-    role: 'user' | 'assistant',
-    content: string,
-    audioFileId?: string,
-    existingOrderId?: string
-  ) => Promise<void>;
+  addMessage: (role: 'user' | 'assistant', content: string, audioFileId?: string) => Promise<void>;
   processAudio: (audioBlob: Blob) => Promise<void>;
   processTranscription: (result: { transcription: string; audioFileId: string }) => Promise<void>;
   processText: (text: string) => Promise<void>;
@@ -32,76 +25,26 @@ const OrderChatContext = createContext<OrderChatContextType | undefined>(undefin
 
 export function OrderChatProvider({
   children,
-  orderId: initialOrderId,
-  organizationId,
+  orderId,
   initialMessages = [],
-  onOrderCreated,
   onOrderProcessed,
 }: {
   children: React.ReactNode;
-  orderId: string | null;
+  orderId: string;
   organizationId: string;
   initialMessages?: Message[];
-  onOrderCreated?: (orderId: string) => void;
   onOrderProcessed?: (redirectUrl: string) => void;
 }) {
-  // Use centralized order lifecycle hook to prevent race conditions
-  const {
-    orderId,
-    ensureOrderExists: ensureOrderExistsFromHook,
-    setOrderId,
-  } = useOrderLifecycle(organizationId);
-
+  // orderId is now always provided (eager creation in page.tsx)
+  // No lazy creation needed - orderId never changes during conversation
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentStatus, setCurrentStatus] = useState('idle');
 
-  // Initialize orderId from props if provided
-  useEffect(() => {
-    if (initialOrderId && !orderId) {
-      setOrderId(initialOrderId);
-    }
-  }, [initialOrderId, orderId, setOrderId]);
-
-  /**
-   * Internal helper that returns both orderId and creation status
-   */
-  const ensureOrderExistsInternal = useCallback(async (): Promise<{
-    orderId: string;
-    wasCreated: boolean;
-  }> => {
-    const wasCreated = !orderId;
-    const currentOrderId = await ensureOrderExistsFromHook();
-
-    return { orderId: currentOrderId, wasCreated };
-  }, [orderId, ensureOrderExistsFromHook]);
-
-  /**
-   * Public API - returns only orderId for compatibility
-   */
-  const ensureOrderExists = useCallback(async (): Promise<string> => {
-    const { orderId: currentOrderId } = await ensureOrderExistsInternal();
-    return currentOrderId;
-  }, [ensureOrderExistsInternal]);
-
   const addMessage = useCallback(
-    async (
-      role: 'user' | 'assistant',
-      content: string,
-      audioFileId?: string,
-      existingOrderId?: string
-    ) => {
-      let currentOrderId: string;
-      let wasCreated = false;
-
-      // Use provided orderId or ensure one exists
-      if (existingOrderId) {
-        currentOrderId = existingOrderId;
-      } else {
-        const result = await ensureOrderExistsInternal();
-        currentOrderId = result.orderId;
-        wasCreated = result.wasCreated;
-      }
+    async (role: 'user' | 'assistant', content: string, audioFileId?: string) => {
+      // orderId is always available (eager creation)
+      // No lazy creation or state changes needed
 
       // Generate sequence number based on current message count
       // This ensures chronological ordering even if created_at has clock skew
@@ -110,7 +53,7 @@ export function OrderChatProvider({
       const tempId = crypto.randomUUID();
       const newMessage: Message = {
         id: tempId,
-        order_id: currentOrderId,
+        order_id: orderId,
         role,
         content,
         audio_file_id: audioFileId || null,
@@ -120,22 +63,13 @@ export function OrderChatProvider({
       setMessages(prev => [...prev, newMessage]);
 
       try {
-        await saveConversationMessage(currentOrderId, role, content, audioFileId, sequenceNumber);
-
-        // Notify parent component about order creation AFTER message is saved
-        // This prevents router.replace from interrupting the message flow
-        if (wasCreated && onOrderCreated) {
-          // Defer to next tick to ensure message is in state
-          setTimeout(() => {
-            onOrderCreated(currentOrderId);
-          }, 0);
-        }
+        await saveConversationMessage(orderId, role, content, audioFileId, sequenceNumber);
       } catch (error) {
         console.error('Failed to save message:', error);
         toast.error('Error al guardar el mensaje');
       }
     },
-    [ensureOrderExistsInternal, messages.length, onOrderCreated]
+    [orderId, messages.length]
   );
 
   const processText = useCallback(
@@ -154,12 +88,11 @@ export function OrderChatProvider({
   );
 
   const processTranscription = useCallback(
-    async (result: { transcription: string; audioFileId: string; orderId?: string }) => {
+    async (result: { transcription: string; audioFileId: string }) => {
       setIsProcessing(true);
       try {
         // The transcription is already done, just add the message
-        // Use the orderId from the result to prevent duplicate order creation
-        await addMessage('user', result.transcription, result.audioFileId, result.orderId);
+        await addMessage('user', result.transcription, result.audioFileId);
       } finally {
         setIsProcessing(false);
       }
@@ -173,13 +106,11 @@ export function OrderChatProvider({
       setCurrentStatus('transcribing');
 
       try {
-        // Ensure order exists before uploading audio
-        const currentOrderId = await ensureOrderExists();
-
+        // orderId is always available (eager creation)
         // 1. Upload and transcribe
         const formData = new FormData();
         formData.append('audio', audioBlob, 'recording.webm');
-        formData.append('orderId', currentOrderId);
+        formData.append('orderId', orderId);
 
         const response = await fetch('/api/process-audio', {
           method: 'POST',
@@ -207,8 +138,7 @@ export function OrderChatProvider({
         const { transcription, audioFileId } = await response.json();
 
         // 2. Add user message with audio
-        // Pass currentOrderId to prevent race condition (creating duplicate orders)
-        await addMessage('user', transcription, audioFileId, currentOrderId);
+        await addMessage('user', transcription, audioFileId);
       } catch (error) {
         console.error('Audio processing error:', error);
         toast.error('Error al procesar el audio');
@@ -217,10 +147,10 @@ export function OrderChatProvider({
         setCurrentStatus('idle');
       }
     },
-    [ensureOrderExists, addMessage]
+    [orderId, addMessage]
   );
 
-  // Process order: ensure there are user messages, lazy create order, call batch processing
+  // Process order: validate user messages and call batch processing
   const processOrder = useCallback(async () => {
     // Check for user messages
     const hasUserMessages = messages.some(m => m.role === 'user');
@@ -229,15 +159,13 @@ export function OrderChatProvider({
       return;
     }
 
-    // Ensure order exists
-    const currentOrderId = await ensureOrderExists();
-
+    // orderId is always available (eager creation)
     setIsProcessing(true);
     setCurrentStatus('parsing');
 
     try {
       const { processOrderBatch } = await import('@/app/(protected)/orders/actions');
-      const result = await processOrderBatch(currentOrderId);
+      const result = await processOrderBatch(orderId);
 
       if (result.redirectUrl) {
         // Notify parent component to handle navigation
@@ -260,7 +188,7 @@ export function OrderChatProvider({
       setIsProcessing(false);
       setCurrentStatus('idle');
     }
-  }, [messages, ensureOrderExists, addMessage, onOrderProcessed]);
+  }, [messages, orderId, addMessage, onOrderProcessed]);
 
   // Memoize context value to prevent unnecessary re-renders in child components
   // Only re-create when actual dependencies change
@@ -270,7 +198,6 @@ export function OrderChatProvider({
       messages,
       isProcessing,
       currentStatus,
-      ensureOrderExists,
       addMessage,
       processAudio,
       processTranscription,
@@ -282,7 +209,6 @@ export function OrderChatProvider({
       messages,
       isProcessing,
       currentStatus,
-      ensureOrderExists,
       addMessage,
       processAudio,
       processTranscription,

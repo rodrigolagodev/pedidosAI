@@ -55,10 +55,20 @@ export async function GET(request: NextRequest) {
     await JobQueue.processBatch(supabaseAdmin);
     console.error('[Cron] Job processing completed');
 
+    // Cleanup empty draft orders (older than 7 days)
+    console.error('[Cron] Starting draft cleanup...');
+    const { cleanupEmptyDrafts } = await import('@/app/(protected)/orders/actions');
+    const cleanupResult = await cleanupEmptyDrafts(supabaseAdmin, 7);
+    console.error(`[Cron] Draft cleanup completed: ${cleanupResult.deletedCount} orders deleted`);
+
     return NextResponse.json({
       success: true,
       message: 'Jobs processed successfully',
       timestamp: new Date().toISOString(),
+      cleanup: {
+        deletedDrafts: cleanupResult.deletedCount,
+        errors: cleanupResult.errors.length > 0 ? cleanupResult.errors : undefined,
+      },
     });
   } catch (error) {
     console.error('[Cron] Error processing jobs:', error);

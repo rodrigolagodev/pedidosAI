@@ -54,12 +54,33 @@ export default async function NewOrderPage() {
     redirect(`/orders/${recentDraft.id}`);
   }
 
-  // We don't create the order immediately anymore (Lazy Creation)
-  // We pass the organizationId so the context can create it when needed
+  // EAGER ORDER CREATION: Create draft order immediately
+  // This prevents orderId state changes that cause input focus loss
+  const { data: newOrder, error } = await supabase
+    .from('orders')
+    .insert({
+      organization_id: membership.organization_id,
+      created_by: user.id,
+      status: 'draft',
+    })
+    .select('id')
+    .single();
 
+  if (error || !newOrder) {
+    console.error('Failed to create draft order:', error);
+    return (
+      <div className="p-8 text-center">
+        <h2 className="text-xl font-bold text-red-500">Error Creating Order</h2>
+        <p>Unable to create a new order. Please try again.</p>
+      </div>
+    );
+  }
+
+  // Always pass a real orderId (never null)
+  // This ensures orderId never changes during the conversation
   return (
     <OrderChatInterface
-      orderId={null}
+      orderId={newOrder.id}
       initialMessages={[]}
       organizationSlug={membership.organization?.slug || ''}
       organizationId={membership.organization_id}
