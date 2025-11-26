@@ -48,12 +48,16 @@ export async function syncPendingItems() {
     try {
       let audioFileId = msg.audio_url;
 
-      // Upload Audio if present and not yet uploaded (and not a UUID)
-      // Check if it's a blob and not a string UUID (simple check: length > 50 or starts with blob:)
-      // Actually msg.audio_url stores the ID if synced, or blob url if local?
-      // The type definition says string | undefined.
-      // If we have audio_blob, we need to upload.
+      // Validate if audioFileId is a valid UUID
+      const isUuid = (str?: string) =>
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str || '');
 
+      if (audioFileId && !isUuid(audioFileId)) {
+        console.warn('Invalid audioFileId (not a UUID), clearing:', audioFileId);
+        audioFileId = undefined;
+      }
+
+      // Upload Audio if present and not yet uploaded (or if ID was invalid)
       if (msg.type === 'audio' && msg.audio_blob && !audioFileId) {
         const fileName = `${msg.order_id}/${msg.id}.webm`;
         const { error } = await supabase.storage.from('orders').upload(fileName, msg.audio_blob, {
@@ -107,7 +111,7 @@ export async function syncPendingItems() {
         // Check local status
         const order = await db.orders.get(orderId);
         if (order && order.status === 'review') {
-          console.log('Triggering batch processing for order:', orderId);
+          // console.log('Triggering batch processing for order:', orderId);
           await processOrderBatch(orderId);
         }
       } catch (error) {

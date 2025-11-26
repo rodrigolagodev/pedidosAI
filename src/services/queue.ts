@@ -58,19 +58,26 @@ export class JobQueue {
   /**
    * Process a batch of pending jobs
    */
-  static async processBatch(client?: SupabaseClient) {
+  static async processBatch(client?: SupabaseClient, olderThanMinutes?: number) {
     const supabase = client ?? (await createClient());
 
     // 1. Lock and fetch pending jobs
     // Note: Supabase/Postgres doesn't have easy "SKIP LOCKED" in JS client without RPC
     // We'll do a simple fetch for now. Concurrency might be an issue if scaled,
     // but for now it's fine.
-    const { data: jobs, error } = await supabase
+    let query = supabase
       .from('jobs')
       .select('*')
       .eq('status', 'pending')
       .lt('attempts', 3) // Max attempts check
       .limit(20); // Increased from 5 to 20 for faster processing
+
+    if (olderThanMinutes) {
+      const cutoff = new Date(Date.now() - olderThanMinutes * 60 * 1000).toISOString();
+      query = query.lt('created_at', cutoff);
+    }
+
+    const { data: jobs, error } = await query;
 
     if (error || !jobs || jobs.length === 0) return;
 

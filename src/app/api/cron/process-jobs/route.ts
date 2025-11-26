@@ -50,9 +50,9 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    // Procesar jobs pendientes
-    console.error('[Cron] Starting job processing...');
-    await JobQueue.processBatch(supabaseAdmin);
+    // Procesar jobs pendientes (Fallback: solo jobs > 5 minutos)
+    console.error('[Cron] Starting job processing (Fallback mode)...');
+    await JobQueue.processBatch(supabaseAdmin, 5);
     console.error('[Cron] Job processing completed');
 
     // Cleanup empty draft orders (older than 7 days)

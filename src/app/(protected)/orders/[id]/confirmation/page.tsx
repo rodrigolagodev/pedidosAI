@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { CheckCircle2 } from 'lucide-react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { OrderEmailStatus } from '@/components/orders/OrderEmailStatus';
 
 import { createClient } from '@/lib/supabase/server';
 import { notFound, redirect } from 'next/navigation';
@@ -51,6 +52,7 @@ export default async function OrderConfirmationPage({ params }: PageProps) {
 
   return (
     <div className="container mx-auto flex h-[80vh] max-w-lg flex-col items-center justify-center p-4">
+      <OrderEmailStatus orderId={id} />
       <Card className="w-full text-center">
         <CardHeader>
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">

@@ -5,7 +5,7 @@ import prettierConfig from 'eslint-config-prettier';
 
 export default [
   {
-    ignores: ['.next/**', 'node_modules/**'],
+    ignores: ['.next/**', 'node_modules/**', 'supabase/functions/**'],
   },
   {
     files: ['**/*.{js,jsx,ts,tsx}'],
