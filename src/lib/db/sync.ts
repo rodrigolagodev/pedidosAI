@@ -92,7 +92,8 @@ export async function syncPendingItems() {
         role,
         msg.content,
         audioFileId,
-        msg.sequence_number
+        msg.sequence_number,
+        msg.id
       );
 
       await db.messages.update(msg.id, { sync_status: 'synced' });

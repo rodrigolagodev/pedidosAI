@@ -28,17 +28,24 @@ export class OrderCommands {
     content: string;
     audioFileId?: string;
     sequenceNumber: number;
+    id?: string;
   }): Promise<string> {
-    const messageId = crypto.randomUUID();
+    const messageId = params.id || crypto.randomUUID();
 
-    const { error } = await this.supabase.from('order_conversations').insert({
-      id: messageId,
-      order_id: params.orderId,
-      role: params.role,
-      content: params.content,
-      audio_file_id: params.audioFileId || null,
-      sequence_number: params.sequenceNumber,
-    });
+    const { error } = await this.supabase.from('order_conversations').upsert(
+      {
+        id: messageId,
+        order_id: params.orderId,
+        role: params.role,
+        content: params.content,
+        audio_file_id: params.audioFileId || null,
+        sequence_number: params.sequenceNumber,
+      },
+      {
+        onConflict: 'id',
+        ignoreDuplicates: false,
+      }
+    );
 
     if (error) {
       throw new Error(`Failed to add message: ${error.message}`);

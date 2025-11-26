@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { createClient } from '@/lib/supabase/client';
 
 export type HistoryItem = {
@@ -46,20 +46,26 @@ export function useRealtimeOrders({
   const [orders, setOrders] = useState<HistoryItem[]>(initialOrders);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
+  const onRefreshRef = useRef(onRefresh);
+
+  useEffect(() => {
+    onRefreshRef.current = onRefresh;
+  }, [onRefresh]);
+
   // Function to refresh data
   const refresh = useCallback(async () => {
     if (isRefreshing) return; // Prevent duplicate refreshes
 
     setIsRefreshing(true);
     try {
-      const freshOrders = await onRefresh();
+      const freshOrders = await onRefreshRef.current();
       setOrders(freshOrders);
     } catch (error) {
       console.error('Error refreshing orders:', error);
     } finally {
       setIsRefreshing(false);
     }
-  }, [onRefresh, isRefreshing]);
+  }, [isRefreshing]);
 
   useEffect(() => {
     const supabase = createClient();

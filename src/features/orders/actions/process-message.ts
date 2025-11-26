@@ -10,7 +10,8 @@ export async function saveConversationMessage(
   role: 'user' | 'assistant',
   content: string,
   audioFileId?: string,
-  sequenceNumber?: number
+  sequenceNumber?: number,
+  id?: string
 ) {
   // We use getOrderContext to verify access to the order
   const { supabase } = await getOrderContext(orderId);
@@ -25,6 +26,7 @@ export async function saveConversationMessage(
     content,
     audioFileId,
     sequenceNumber: sequenceNumber || 0,
+    id,
   });
 }
 
