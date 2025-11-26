@@ -17,8 +17,8 @@ export function MessageList() {
   }, [messages, isLoading]);
 
   return (
-    <div className="flex-1 overflow-y-auto p-4 space-y-4">
-      {messages.length === 0 && (
+    <div className="flex-1 overflow-y-auto p-4 flex flex-col">
+      {messages.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-full text-muted-foreground space-y-4">
           <Bot className="h-12 w-12 opacity-50" />
           <p className="text-center max-w-md">
@@ -27,29 +27,31 @@ export function MessageList() {
             Dime qué necesitas pedir (ej: "3 kilos de tomate y 2 cajas de leche") o graba un audio.
           </p>
         </div>
-      )}
+      ) : (
+        <div className="mt-auto space-y-4 w-full">
+          {messages.map(msg => (
+            <MessageItem key={msg.id} message={msg} />
+          ))}
 
-      {messages.map(msg => (
-        <MessageItem key={msg.id} message={msg} />
-      ))}
-
-      {isLoading && (
-        <div className="flex w-full gap-3 max-w-3xl mx-auto justify-start">
-          <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-            <Bot className="h-5 w-5 text-primary" />
-          </div>
-          <div className="bg-muted rounded-2xl rounded-bl-none px-4 py-3 flex items-center gap-2">
-            <span className="flex gap-1">
-              <span className="h-2 w-2 bg-muted-foreground/60 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
-              <span className="h-2 w-2 bg-muted-foreground/60 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
-              <span className="h-2 w-2 bg-muted-foreground/60 rounded-full animate-bounce"></span>
-            </span>
-            <span className="text-xs text-muted-foreground ml-2 capitalize">
-              {currentStatus === 'transcribing' && 'Transcribiendo audio...'}
-              {currentStatus === 'parsing' && 'Escribiendo...'}
-              {currentStatus === 'classifying' && 'Buscando proveedores...'}
-            </span>
-          </div>
+          {isLoading && (
+            <div className="flex w-full gap-3 max-w-3xl mx-auto justify-start">
+              <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                <Bot className="h-5 w-5 text-primary" />
+              </div>
+              <div className="bg-muted rounded-2xl rounded-bl-none px-4 py-3 flex items-center gap-2">
+                <span className="flex gap-1">
+                  <span className="h-2 w-2 bg-muted-foreground/60 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                  <span className="h-2 w-2 bg-muted-foreground/60 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                  <span className="h-2 w-2 bg-muted-foreground/60 rounded-full animate-bounce"></span>
+                </span>
+                <span className="text-xs text-muted-foreground ml-2 capitalize">
+                  {currentStatus === 'transcribing' && 'Transcribiendo audio...'}
+                  {currentStatus === 'parsing' && 'Escribiendo...'}
+                  {currentStatus === 'classifying' && 'Buscando proveedores...'}
+                </span>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

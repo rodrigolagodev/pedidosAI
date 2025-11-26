@@ -10,7 +10,7 @@ const publicRoutes = [
   '/reset-password',
   '/verify-email',
   '/invite',
-  '/dashboard', // Dashboard handles its own auth check and redirects
+  '/auth/confirm',
   '/api/cron', // Cron endpoints handle their own authentication
 ];
 

@@ -27,8 +27,7 @@ export async function createOrganization(
 
   const { data, error } = await supabase.rpc('create_organization_with_membership', {
     org_name: name,
-    org_slug: slug || '', // RPC expects string, not null
-    user_email: (await supabase.auth.getUser()).data.user?.email || '',
+    org_slug: slug || undefined,
   });
 
   if (error) {

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { acceptInvitation } from '@/lib/organizations/actions';
 
 interface AcceptInvitationFormProps {
@@ -10,6 +11,8 @@ interface AcceptInvitationFormProps {
 export function AcceptInvitationForm({ token }: AcceptInvitationFormProps) {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  const router = useRouter();
 
   async function handleAccept() {
     setError('');
@@ -24,16 +27,13 @@ export function AcceptInvitationForm({ token }: AcceptInvitationFormProps) {
     }
 
     // Redirect to the organization dashboard
-    window.location.href = `/${result.data?.slug || 'dashboard'}`;
+    router.push(`/${result.data?.slug || 'dashboard'}`);
+    router.refresh();
   }
 
   return (
     <div className="space-y-4">
-      {error && (
-        <div className="rounded-md bg-red-50 p-4 text-sm text-red-700">
-          {error}
-        </div>
-      )}
+      {error && <div className="rounded-md bg-red-50 p-4 text-sm text-red-700">{error}</div>}
 
       <button
         onClick={handleAccept}
@@ -44,7 +44,7 @@ export function AcceptInvitationForm({ token }: AcceptInvitationFormProps) {
       </button>
 
       <button
-        onClick={() => (window.location.href = '/dashboard')}
+        onClick={() => router.push('/dashboard')}
         disabled={isLoading}
         className="flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
       >
