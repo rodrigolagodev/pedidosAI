@@ -14,7 +14,7 @@ interface RecentOrder {
   type: 'supplier_order' | 'order' | 'order_bundle';
   supplier?: {
     name: string;
-  };
+  } | null;
 }
 
 interface RecentActivityListProps {
