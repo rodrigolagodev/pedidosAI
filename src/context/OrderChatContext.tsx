@@ -58,7 +58,7 @@ export function OrderChatProvider({
 
   const { scheduleAIResponse, isWaiting, countdown, pendingCount } = useDebouncedAIResponse({
     orderId,
-    delay: 15000, // 15 segundos
+    delay: 5000, // 5 segundos
     onResponse: handleAIResponse,
   });
 
