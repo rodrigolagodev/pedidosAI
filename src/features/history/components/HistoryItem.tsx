@@ -5,7 +5,6 @@ import {
   HistoryItem as HistoryItemType,
   resendSupplierOrder,
 } from '@/app/(protected)/[slug]/history/actions';
-import { restoreOrder } from '@/features/orders/actions/restore-order';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import {
@@ -19,10 +18,10 @@ import {
   User,
   ExternalLink,
   RefreshCw,
-  RotateCcw,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+
 import { toast } from 'sonner';
 import { LiveOrderStatusBadge } from '@/components/orders/LiveOrderStatusBadge';
 
@@ -42,7 +41,6 @@ const statusConfig: Record<string, { label: string; color: string; icon: LucideI
 export function HistoryItem({ item }: { item: HistoryItemType }) {
   const [expanded, setExpanded] = useState(false);
   const [isResending, setIsResending] = useState(false);
-  const [isRestoring, setIsRestoring] = useState(false);
 
   const config = statusConfig[item.status] || {
     label: item.status,
@@ -68,21 +66,6 @@ export function HistoryItem({ item }: { item: HistoryItemType }) {
       toast.error('Error al reenviar pedido');
     } finally {
       setIsResending(false);
-    }
-  };
-
-  const handleRestore = async () => {
-    if (item.type !== 'order_bundle') return;
-
-    setIsRestoring(true);
-    try {
-      await restoreOrder(item.originalOrderId);
-      toast.success('Pedido restaurado exitosamente');
-    } catch (error) {
-      console.error('Error restoring order:', error);
-      toast.error('Error al restaurar pedido');
-    } finally {
-      setIsRestoring(false);
     }
   };
 
@@ -188,27 +171,6 @@ export function HistoryItem({ item }: { item: HistoryItemType }) {
                     <>
                       <RefreshCw className="w-3 h-3" />
                       Reenviar
-                    </>
-                  )}
-                </Button>
-              )}
-              {item.type === 'order_bundle' && item.status === 'cancelled' && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="gap-2"
-                  onClick={handleRestore}
-                  disabled={isRestoring}
-                >
-                  {isRestoring ? (
-                    <>
-                      <RefreshCw className="w-3 h-3 animate-spin" />
-                      Restaurando...
-                    </>
-                  ) : (
-                    <>
-                      <RotateCcw className="w-3 h-3" />
-                      Restaurar
                     </>
                   )}
                 </Button>
