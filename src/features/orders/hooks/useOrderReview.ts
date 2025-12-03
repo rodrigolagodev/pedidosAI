@@ -45,6 +45,10 @@ export function useOrderReview({
 
   // Sync state with props
   useEffect(() => {
+    setItems(initialItems);
+  }, [initialItems]);
+
+  useEffect(() => {
     setSuppliers(initialSuppliers);
   }, [initialSuppliers]);
 
