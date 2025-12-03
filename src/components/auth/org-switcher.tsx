@@ -13,9 +13,10 @@ interface Organization {
 interface OrgSwitcherProps {
   currentOrg: Organization;
   organizations: Organization[];
+  compact?: boolean;
 }
 
-export function OrgSwitcher({ currentOrg, organizations }: OrgSwitcherProps) {
+export function OrgSwitcher({ currentOrg, organizations, compact = false }: OrgSwitcherProps) {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -30,6 +31,86 @@ export function OrgSwitcher({ currentOrg, organizations }: OrgSwitcherProps) {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  // Compact version for top bar
+  if (compact) {
+    return (
+      <div className="relative" ref={menuRef}>
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="flex items-center gap-1.5 rounded-md px-2 py-1 text-sm hover:bg-accent transition-colors"
+        >
+          <span className="text-foreground font-medium max-w-[120px] truncate">
+            {currentOrg.name}
+          </span>
+          <svg
+            className={`h-4 w-4 text-muted-foreground transition-transform ${
+              isOpen ? 'rotate-180' : ''
+            }`}
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+
+        {isOpen && (
+          <div className="absolute right-0 mt-2 w-64 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 z-dropdown">
+            <div className="py-1">
+              {organizations.length > 1 && (
+                <>
+                  <div className="border-b border-gray-100 px-4 py-2">
+                    <p className="text-xs font-medium uppercase text-gray-500">
+                      Cambiar organización
+                    </p>
+                  </div>
+
+                  {organizations.map(org => (
+                    <Link
+                      key={org.id}
+                      href={`/${org.slug}`}
+                      className={`block px-4 py-2 text-sm hover:bg-gray-100 ${
+                        org.id === currentOrg.id ? 'bg-blue-50 text-blue-700' : 'text-gray-700'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="font-medium">{org.name}</span>
+                        {org.id === currentOrg.id && (
+                          <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path
+                              fillRule="evenodd"
+                              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        )}
+                      </div>
+                      <span className="text-xs text-gray-500">
+                        {org.isAdmin ? 'Administrador' : 'Miembro'}
+                      </span>
+                    </Link>
+                  ))}
+
+                  <div className="border-t border-gray-100" />
+                </>
+              )}
+
+              <Link
+                href="/onboarding"
+                className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+                role="menuitem"
+              >
+                Crear nueva organización
+              </Link>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Original non-compact version
 
   return (
     <div className="relative" ref={menuRef}>

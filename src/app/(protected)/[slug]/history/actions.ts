@@ -118,7 +118,7 @@ export async function getHistoryOrders(slug: string, filters: HistoryFilter = {}
     }
   }
 
-  // 3. Fetch Order Bundles (ONLY draft and review status)
+  // 3. Fetch Order Bundles (draft, review, and archived if requested)
   let orderBundles: any[] = [];
 
   if (showOrderBundles) {
@@ -134,16 +134,25 @@ export async function getHistoryOrders(slug: string, filters: HistoryFilter = {}
       `
       )
       .eq('organization_id', orgId)
-      .in('status', ['draft', 'review'])
       .order('created_at', { ascending: false });
 
     // Apply filters
     if (filters.status && filters.status.length > 0) {
-      const relevantStatuses = filters.status.filter(s => orderBundleStatuses.includes(s));
+      // If status filter is present, use it (this allows fetching 'archived')
+      const relevantStatuses = filters.status.filter(s =>
+        [...orderBundleStatuses, 'archived'].includes(s)
+      );
       if (relevantStatuses.length > 0) {
         orderBundlesQuery = orderBundlesQuery.in('status', relevantStatuses as any);
+      } else {
+        // Filter provided but no relevant statuses for bundles -> return empty
+        orderBundlesQuery = orderBundlesQuery.in('status', []);
       }
+    } else {
+      // Default: only draft and review (NO archived)
+      orderBundlesQuery = orderBundlesQuery.in('status', ['draft', 'review']);
     }
+
     if (filters.memberId) {
       orderBundlesQuery = orderBundlesQuery.eq('created_by', filters.memberId);
     }
@@ -411,15 +420,21 @@ export async function refreshHistoryOrders(
       `
       )
       .eq('organization_id', organizationId)
-      .in('status', ['draft', 'review'])
       .order('created_at', { ascending: false });
 
     if (filters.status && filters.status.length > 0) {
-      const relevantStatuses = filters.status.filter(s => orderBundleStatuses.includes(s));
+      const relevantStatuses = filters.status.filter(s =>
+        [...orderBundleStatuses, 'archived'].includes(s)
+      );
       if (relevantStatuses.length > 0) {
         orderBundlesQuery = orderBundlesQuery.in('status', relevantStatuses as any);
+      } else {
+        orderBundlesQuery = orderBundlesQuery.in('status', []);
       }
+    } else {
+      orderBundlesQuery = orderBundlesQuery.in('status', ['draft', 'review']);
     }
+
     if (filters.memberId) {
       orderBundlesQuery = orderBundlesQuery.eq('created_by', filters.memberId);
     }

@@ -20,7 +20,7 @@ export function MessageList() {
   }, [messages, isLoading]);
 
   return (
-    <div className="flex-1 overflow-y-auto p-4 flex flex-col">
+    <div className="flex-1 overflow-y-auto p-4 pb-48 flex flex-col">
       {messages.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-full text-muted-foreground space-y-4">
           <Bot className="h-12 w-12 opacity-50" />

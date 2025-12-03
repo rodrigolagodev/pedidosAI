@@ -23,6 +23,7 @@ import type { Order, ParsedItem } from '@/domain/types';
 export interface ProcessOrderInput {
   orderId: string;
   organizationId: string;
+  organizationSlug: string;
   supabase: SupabaseClient<Database>;
 }
 
@@ -36,7 +37,7 @@ export interface ProcessOrderOutput {
 export async function processOrderMessageUseCase(
   input: ProcessOrderInput
 ): Promise<ProcessOrderOutput> {
-  const { orderId, organizationId, supabase } = input;
+  const { orderId, organizationId, organizationSlug, supabase } = input;
 
   try {
     // 1. Fetch order
@@ -131,7 +132,7 @@ export async function processOrderMessageUseCase(
 
     return {
       success: true,
-      redirectUrl: `/orders/${orderId}/review`,
+      redirectUrl: `/${organizationSlug}/orders/${orderId}/review`,
       itemsProcessed: parseResult.itemCount,
     };
   } catch (error) {

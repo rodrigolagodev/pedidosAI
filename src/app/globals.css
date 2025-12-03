@@ -132,3 +132,55 @@
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
 }
+
+/* Navigation System Variables */
+@layer base {
+  :root {
+    /* Navigation Heights */
+    --top-bar-height: 3.5rem; /* 56px */
+    --bottom-nav-height: 4.75rem; /* 76px */
+    --fab-size: 4rem; /* 64px */
+
+    /* Navigation Colors */
+    --nav-active: var(--primary);
+    --nav-inactive: 0 0% 64%; /* gray-400 equivalent */
+    --nav-bg: 0 0% 100%; /* white */
+    --nav-border: var(--border);
+
+    /* Z-index Layers */
+    --z-bottom-nav: 40;
+    --z-fab: 45;
+    --z-top-nav: 50;
+    --z-dropdown: 60;
+    --z-modal: 100;
+  }
+}
+
+/* Navigation Utilities */
+@layer utilities {
+  .nav-item-active {
+    color: hsl(var(--nav-active));
+  }
+
+  .nav-item-inactive {
+    color: hsl(var(--nav-inactive));
+  }
+
+  .nav-item-inactive:hover {
+    color: hsl(var(--foreground));
+  }
+
+  /* Safe area for content (accounts for fixed nav) */
+  .safe-area-top {
+    padding-top: var(--top-bar-height);
+  }
+
+  .safe-area-bottom {
+    padding-bottom: var(--bottom-nav-height);
+  }
+
+  .safe-area-both {
+    padding-top: var(--top-bar-height);
+    padding-bottom: var(--bottom-nav-height);
+  }
+}

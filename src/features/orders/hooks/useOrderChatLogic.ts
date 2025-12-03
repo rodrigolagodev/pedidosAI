@@ -12,10 +12,15 @@ import { CallAICommand } from '@/lib/queue/commands/CallAICommand';
 export interface OrderChatLogicProps {
   orderId: string;
   organizationId: string;
+  organizationSlug: string;
   onOrderProcessed?: (redirectUrl: string) => void;
 }
 
-export function useOrderChatLogic({ orderId, onOrderProcessed }: OrderChatLogicProps) {
+export function useOrderChatLogic({
+  orderId,
+  organizationSlug,
+  onOrderProcessed,
+}: OrderChatLogicProps) {
   const { messages, addMessage, updateMessage } = useLocalMessages(orderId);
   const { updateStatus } = useLocalOrder(orderId);
   const { syncNow } = useSync();
@@ -279,7 +284,7 @@ export function useOrderChatLogic({ orderId, onOrderProcessed }: OrderChatLogicP
       } else {
         toast.info('Guardado localmente. Se procesará al conectar.');
         if (onOrderProcessed) {
-          onOrderProcessed(`/orders/${orderId}/review`);
+          onOrderProcessed(`/${organizationSlug}/orders/${orderId}/review`);
         }
       }
     } catch (error) {

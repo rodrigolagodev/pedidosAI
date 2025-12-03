@@ -27,20 +27,22 @@ export default async function EditSupplierPage({
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Editar Proveedor</h1>
-      <SupplierForm
-        slug={slug}
-        initialData={{
-          ...supplier,
-          email: supplier.email ?? '',
-          preferred_contact_method: supplier.preferred_contact_method ?? 'email',
-          phone: supplier.phone ?? undefined,
-          address: supplier.address ?? undefined,
-          notes: supplier.notes ?? undefined,
-          custom_keywords: supplier.custom_keywords ?? [],
-        }}
-      />
+    <div className="container mx-auto py-6 px-4">
+      <div className="max-w-2xl mx-auto">
+        <h1 className="text-2xl font-bold text-gray-900 mb-6">Editar Proveedor</h1>
+        <SupplierForm
+          slug={slug}
+          initialData={{
+            ...supplier,
+            email: supplier.email ?? '',
+            preferred_contact_method: supplier.preferred_contact_method ?? 'email',
+            phone: supplier.phone ?? undefined,
+            address: supplier.address ?? undefined,
+            notes: supplier.notes ?? undefined,
+            custom_keywords: supplier.custom_keywords ?? [],
+          }}
+        />
+      </div>
     </div>
   );
 }

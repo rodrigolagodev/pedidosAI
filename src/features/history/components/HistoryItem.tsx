@@ -18,6 +18,7 @@ import {
   User,
   ExternalLink,
   RefreshCw,
+  Archive,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -27,6 +28,9 @@ import { toast } from 'sonner';
 import { LiveOrderStatusBadge } from '@/components/orders/LiveOrderStatusBadge';
 
 import { LucideIcon } from 'lucide-react';
+import { ArchiveButton } from '@/features/orders/components/actions/ArchiveButton';
+import { RestoreButton } from '@/features/orders/components/actions/RestoreButton';
+import { DeleteOrderDialog } from '@/features/orders/components/actions/DeleteOrderDialog';
 
 const statusConfig: Record<string, { label: string; color: string; icon: LucideIcon }> = {
   draft: { label: 'Borrador', color: 'bg-stone-100 text-stone-700', icon: Package },
@@ -37,6 +41,7 @@ const statusConfig: Record<string, { label: string; color: string; icon: LucideI
   delivered: { label: 'Entregado', color: 'bg-green-100 text-green-700', icon: CheckCircle },
   failed: { label: 'Fallido', color: 'bg-red-100 text-red-700', icon: AlertCircle },
   cancelled: { label: 'Cancelado', color: 'bg-gray-100 text-gray-700', icon: Package },
+  archived: { label: 'Archivado', color: 'bg-stone-100 text-stone-400', icon: Archive },
 };
 
 export function HistoryItem({ item }: { item: HistoryItemType }) {
@@ -79,7 +84,9 @@ export function HistoryItem({ item }: { item: HistoryItemType }) {
   ) as any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
   return (
-    <div className="bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden transition-all hover:shadow-md">
+    <div
+      className={`bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden transition-all hover:shadow-md ${item.status === 'archived' ? 'opacity-75' : ''}`}
+    >
       <div
         className="p-4 flex items-center justify-between cursor-pointer"
         onClick={() => setExpanded(!expanded)}
@@ -158,6 +165,19 @@ export function HistoryItem({ item }: { item: HistoryItemType }) {
             </div>
 
             <div className="flex items-end justify-end gap-2">
+              {/* Actions for Archived Orders */}
+              {item.status === 'archived' && (
+                <>
+                  <RestoreButton orderId={item.originalOrderId || item.id} />
+                  <DeleteOrderDialog orderId={item.originalOrderId || item.id} />
+                </>
+              )}
+
+              {/* Actions for Active Orders */}
+              {['draft', 'review'].includes(item.status) && (
+                <ArchiveButton orderId={item.originalOrderId || item.id} />
+              )}
+
               {item.type === 'supplier_order' && item.status === 'failed' && (
                 <Button
                   size="sm"
@@ -179,13 +199,21 @@ export function HistoryItem({ item }: { item: HistoryItemType }) {
                   )}
                 </Button>
               )}
+
+              {/* Only show "Ver detalle" if not archived, or if we want to allow viewing archived orders */}
               <Link href={detailsHref}>
-                <Button size="sm" className="gap-2">
+                <Button
+                  size="sm"
+                  className="gap-2"
+                  variant={item.status === 'archived' ? 'outline' : 'default'}
+                >
                   {item.type === 'supplier_order'
                     ? 'Ver detalle'
                     : item.status === 'draft'
                       ? 'Continuar pedido'
-                      : 'Ver pedido completo'}
+                      : item.status === 'archived'
+                        ? 'Ver archivado'
+                        : 'Ver pedido completo'}
                   <ExternalLink className="w-3 h-3" />
                 </Button>
               </Link>

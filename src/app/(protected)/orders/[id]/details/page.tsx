@@ -39,7 +39,7 @@ export default async function OrderDetailsPage({ params }: PageProps) {
       : 'Este pedido ya fue enviado. Los detalles son de solo lectura.';
 
     return (
-      <div className="container mx-auto py-6 max-w-5xl">
+      <div className="container mx-auto py-6 px-4">
         <div className="mb-8">
           <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
           <p className="text-muted-foreground">{description}</p>

@@ -52,6 +52,11 @@ export function useRealtimeOrders({
     onRefreshRef.current = onRefresh;
   }, [onRefresh]);
 
+  // Sync with initialOrders when they change (e.g. after router.refresh())
+  useEffect(() => {
+    setOrders(initialOrders);
+  }, [initialOrders]);
+
   // Function to refresh data
   const refresh = useCallback(async () => {
     if (isRefreshing) return; // Prevent duplicate refreshes

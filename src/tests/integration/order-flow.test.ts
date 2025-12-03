@@ -157,6 +157,7 @@ describe('Order Processing Flow (Integration)', () => {
     const result = await processOrderMessageUseCase({
       orderId: testOrderId,
       organizationId: testOrgId,
+      organizationSlug: 'test-org',
       supabase: mockSupabase,
     });
 
@@ -220,6 +221,7 @@ describe('Order Processing Flow (Integration)', () => {
     const result = await processOrderMessageUseCase({
       orderId: testOrderId,
       organizationId: testOrgId,
+      organizationSlug: 'test-org',
       supabase: mockSupabase,
     });
 
@@ -235,6 +237,7 @@ describe('Order Processing Flow (Integration)', () => {
     const result = await processOrderMessageUseCase({
       orderId: testOrderId,
       organizationId: testOrgId,
+      organizationSlug: 'test-org',
       supabase: mockSupabase,
     });
 
@@ -246,6 +249,7 @@ describe('Order Processing Flow (Integration)', () => {
     await processOrderMessageUseCase({
       orderId: testOrderId,
       organizationId: testOrgId,
+      organizationSlug: 'test-org',
       supabase: mockSupabase,
     });
 

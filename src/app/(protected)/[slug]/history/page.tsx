@@ -84,7 +84,7 @@ export default async function HistoryPage({
 
   if (!org) {
     return (
-      <div className="container mx-auto py-8 px-4 max-w-5xl">
+      <div className="container mx-auto py-8 px-4">
         <div className="text-center">
           <h2 className="text-xl font-bold text-red-500">Organización no encontrada</h2>
         </div>
@@ -100,7 +100,7 @@ export default async function HistoryPage({
   ]);
 
   return (
-    <div className="container mx-auto py-8 px-4 max-w-5xl">
+    <div className="container mx-auto py-8 px-4">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-stone-900">Historial de Pedidos</h1>
         <p className="text-stone-500">Revisa el estado y detalle de tus pedidos anteriores.</p>

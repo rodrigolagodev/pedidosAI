@@ -2,13 +2,10 @@
 
 import { useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { OrderChatProvider } from '@/context/OrderChatContext';
 import { MessageList } from './MessageList';
 import { ChatInput } from './ChatInput';
 import { ProcessButton } from './ProcessButton';
-import { Button } from '@/components/ui/button';
-import { Save } from 'lucide-react';
 import { Database } from '@/types/database';
 import { ConnectionStatus } from './ConnectionStatus';
 
@@ -43,34 +40,27 @@ export function OrderChatInterface({
       orderId={orderId}
       initialMessages={initialMessages}
       organizationId={organizationId}
+      organizationSlug={organizationSlug}
       onOrderProcessed={handleOrderProcessed}
     >
-      <div className="flex flex-col h-[calc(100vh-4rem)] bg-background">
-        <header className="px-6 py-4 border-b bg-background flex items-center justify-between">
+      <div className="flex flex-col h-full bg-background">
+        {/* Sticky Header - Below TopBar */}
+        <div className="sticky top-[var(--top-bar-height)] z-30 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b px-4 py-3 flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-semibold tracking-tight">Nuevo Pedido</h1>
-            <p className="text-sm text-muted-foreground">
-              Graba o escribe los productos que necesitas
-            </p>
-            <ConnectionStatus />
+            <h1 className="text-lg font-semibold text-foreground leading-none">Nuevo Pedido</h1>
+            <div className="flex items-center gap-2 mt-1">
+              <ConnectionStatus />
+              <span className="text-xs text-muted-foreground">Graba o escribe</span>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" asChild>
-              <Link href={`/${organizationSlug}`}>
-                <Save className="h-4 w-4 mr-1" />
-                Guardar y Salir
-              </Link>
-            </Button>
-            <ProcessButton />
-            <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">
-              Borrador
-            </span>
-          </div>
-        </header>
+          <ProcessButton />
+        </div>
 
-        <MessageList />
-
-        <ChatInput />
+        {/* Chat Area - Full Height */}
+        <div className="flex-1 flex flex-col min-h-0 relative">
+          <MessageList />
+          <ChatInput />
+        </div>
       </div>
     </OrderChatProvider>
   );

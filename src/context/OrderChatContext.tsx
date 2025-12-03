@@ -30,17 +30,20 @@ export function OrderChatProvider({
   children,
   orderId,
   organizationId,
+  organizationSlug,
   onOrderProcessed,
 }: {
   children: React.ReactNode;
   orderId: string;
   organizationId: string;
+  organizationSlug: string;
   initialMessages?: Array<{ id: string; role: string; content: string; [key: string]: unknown }>;
   onOrderProcessed?: (redirectUrl: string) => void;
 }) {
   const logic = useOrderChatLogic({
     orderId,
     organizationId,
+    organizationSlug,
     onOrderProcessed,
   });
 

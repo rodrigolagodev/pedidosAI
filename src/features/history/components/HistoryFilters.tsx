@@ -109,6 +109,7 @@ export function HistoryFilters({ suppliers, members }: HistoryFiltersProps) {
             <option value="pending">Pendiente</option>
             <option value="draft">Borrador</option>
             <option value="review">En Revisión</option>
+            <option value="archived">Archivado</option>
           </select>
         </div>
 

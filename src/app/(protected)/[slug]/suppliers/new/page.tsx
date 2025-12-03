@@ -16,9 +16,11 @@ export default async function NewSupplierPage({ params }: { params: Promise<{ sl
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Nuevo Proveedor</h1>
-      <SupplierForm slug={slug} />
+    <div className="container mx-auto py-6 px-4">
+      <div className="max-w-2xl mx-auto">
+        <h1 className="text-2xl font-bold text-gray-900 mb-6">Nuevo Proveedor</h1>
+        <SupplierForm slug={slug} />
+      </div>
     </div>
   );
 }

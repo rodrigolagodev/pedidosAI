@@ -27,7 +27,7 @@ export default async function OrderReviewPage({ params }: PageProps) {
   }
 
   return (
-    <div className="container mx-auto py-6 max-w-5xl">
+    <div className="container mx-auto py-6">
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight">Revisar Pedido</h1>
         <p className="text-muted-foreground">

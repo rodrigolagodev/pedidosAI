@@ -1,12 +1,10 @@
 import { notFound } from 'next/navigation';
-import Link from 'next/link';
 import {
   getOrganizationBySlug,
   getSessionOrRedirect,
   getUserOrganizations,
 } from '@/lib/auth/session';
-import { UserMenu } from '@/components/auth/user-menu';
-import { OrgSwitcher } from '@/components/auth/org-switcher';
+import { TopBar, BottomNavBar, FloatingActionButton } from '@/components/navigation';
 
 interface OrgLayoutProps {
   children: React.ReactNode;
@@ -28,36 +26,38 @@ export default async function OrganizationLayout({ children, params }: OrgLayout
   const allOrganizations = await getUserOrganizations();
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              {/* Home button */}
-              <Link
-                href={`/${slug}`}
-                className="rounded-md p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-                title="Ir al inicio"
-              >
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-                  />
-                </svg>
-              </Link>
-              <OrgSwitcher currentOrg={organization} organizations={allOrganizations} />
-            </div>
-            <UserMenu email={session.email} fullName={session.fullName} />
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-background">
+      {/* Fixed Top Navigation */}
+      <TopBar
+        organization={organization}
+        organizations={allOrganizations}
+        user={{
+          email: session.email,
+          fullName: session.fullName,
+        }}
+      />
 
-      {/* Main content */}
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">{children}</main>
+      {/* Main Content with Safe Area Padding */}
+      <main
+        className="mx-auto max-w-app px-4 py-6"
+        style={{
+          paddingTop: 'calc(var(--top-bar-height) + 1.5rem)',
+          paddingBottom: 'calc(var(--bottom-nav-height) + 1.5rem)',
+          minHeight: '100vh',
+        }}
+      >
+        {children}
+      </main>
+
+      {/* Fixed Bottom Navigation */}
+      <BottomNavBar
+        currentPath={`/${slug}`}
+        organizationSlug={slug}
+        isAdmin={organization.isAdmin}
+      />
+
+      {/* Floating Action Button (conditional) */}
+      <FloatingActionButton currentPath={`/${slug}`} organizationSlug={slug} />
     </div>
   );
 }

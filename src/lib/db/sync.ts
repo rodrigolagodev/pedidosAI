@@ -13,34 +13,86 @@ export async function syncPendingItems() {
   } = await supabase.auth.getUser();
   if (!user) return; // Cannot sync if not authenticated
 
-  // 1. Sync Orders
+  // 1. Get Pending Messages first (we need them to identify orders)
+  const pendingMessages = await db.messages.where('sync_status').equals('pending').toArray();
+  const orderIdsFromMessages = [...new Set(pendingMessages.map(m => m.order_id))];
+
+  // 2. Sync Orders
+  // Get explicitly pending orders
   const pendingOrders = await db.orders.where('sync_status').equals('pending').toArray();
 
-  if (pendingOrders.length > 0) {
+  // Get orders referenced by pending messages (even if they are marked as synced locally)
+  // This handles the case where an order was marked "synced" (empty) but now has messages
+  const messageOrders =
+    orderIdsFromMessages.length > 0
+      ? await db.orders.where('id').anyOf(orderIdsFromMessages).toArray()
+      : [];
+
+  // Merge unique orders
+  const allCandidateOrders = [...pendingOrders];
+  const processedOrderIds = new Set(pendingOrders.map(o => o.id));
+
+  for (const order of messageOrders) {
+    if (!processedOrderIds.has(order.id)) {
+      allCandidateOrders.push(order);
+      processedOrderIds.add(order.id);
+    }
+  }
+
+  if (allCandidateOrders.length > 0) {
     try {
-      const ordersToUpsert = pendingOrders.map(order => ({
-        id: order.id,
-        organization_id: order.organization_id,
-        status: order.status,
-        created_at: order.created_at,
-        created_by: user.id,
-      }));
+      // Filter orders: only sync if they have at least one item OR message
+      const ordersToSync: typeof allCandidateOrders = [];
+      const emptyOrders: typeof allCandidateOrders = [];
 
-      const { error } = await supabase.from('orders').upsert(ordersToUpsert);
+      for (const order of allCandidateOrders) {
+        const itemCount = await db.orderItems.where('order_id').equals(order.id).count();
+        const messageCount = await db.messages.where('order_id').equals(order.id).count();
 
-      if (error) throw error;
+        // Sync if it has items OR messages (active conversation)
+        if (itemCount > 0 || messageCount > 0) {
+          ordersToSync.push(order);
+        } else {
+          // Only mark as empty if it's strictly pending (don't touch already synced ones)
+          if (order.sync_status === 'pending') {
+            emptyOrders.push(order);
+          }
+        }
+      }
 
-      // Update local status in batch (parallel promises)
-      await Promise.all(
-        pendingOrders.map(order => db.orders.update(order.id, { sync_status: 'synced' }))
-      );
+      // Sync orders that have content
+      if (ordersToSync.length > 0) {
+        const ordersToUpsert = ordersToSync.map(order => ({
+          id: order.id,
+          organization_id: order.organization_id,
+          status: order.status,
+          created_at: order.created_at,
+          created_by: user.id,
+        }));
+
+        const { error } = await supabase.from('orders').upsert(ordersToUpsert);
+
+        if (error) throw error;
+
+        // Update local status for synced orders
+        await Promise.all(
+          ordersToSync.map(order => db.orders.update(order.id, { sync_status: 'synced' }))
+        );
+      }
+
+      // Mark empty orders as synced WITHOUT sending to Supabase
+      if (emptyOrders.length > 0) {
+        await Promise.all(
+          emptyOrders.map(order => db.orders.update(order.id, { sync_status: 'synced' }))
+        );
+        console.warn(`Skipped syncing ${emptyOrders.length} empty draft(s) to Supabase`);
+      }
     } catch (error) {
       console.error('Failed to batch sync orders:', error);
     }
   }
 
-  // 2. Sync Messages
-  const pendingMessages = await db.messages.where('sync_status').equals('pending').toArray();
+  // 3. Sync Messages
   const ordersToProcess = new Set<string>();
 
   // We process messages sequentially to maintain order and handle audio uploads correctly

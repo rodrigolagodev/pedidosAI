@@ -38,12 +38,32 @@ export default async function EditOrderPage({ params }: PageProps) {
 
     if (supplierOrder) {
       // Supplier orders can't be edited, redirect to details
-
       redirect(`/orders/${id}/details` as any);
     }
 
-    // Neither found, show 404
-    notFound();
+    // If neither found, it MIGHT be a local-only draft.
+    // We check if the user has an organization to contextually bind this order to.
+    const { data: membership } = await supabase
+      .from('memberships')
+      .select('organization_id, organization:organizations(slug)')
+      .eq('user_id', user.id)
+      .limit(1)
+      .single();
+
+    if (!membership) {
+      notFound();
+    }
+
+    // Render chat interface for potential local order
+    // The hook will handle loading from IndexedDB
+    return (
+      <OrderChatInterface
+        orderId={id}
+        initialMessages={[]}
+        organizationSlug={membership.organization?.slug || ''}
+        organizationId={membership.organization_id}
+      />
+    );
   }
 
   // If order is not in draft status, redirect to review or confirmation

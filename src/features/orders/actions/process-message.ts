@@ -134,6 +134,15 @@ export async function processBatchMessages(orderId: string) {
 export async function processOrderBatch(orderId: string) {
   const { supabase, order } = await getOrderContext(orderId);
 
+  // Fetch organization slug for redirect URL
+  const { data: org } = await supabase
+    .from('organizations')
+    .select('slug')
+    .eq('id', order.organization_id)
+    .single();
+
+  const organizationSlug = org?.slug || '';
+
   // Delegate to use case
   const { processOrderMessageUseCase } = await import(
     '@/application/use-cases/ProcessOrderMessage'
@@ -142,6 +151,7 @@ export async function processOrderBatch(orderId: string) {
   return await processOrderMessageUseCase({
     orderId,
     organizationId: order.organization_id,
+    organizationSlug,
     supabase,
   });
 }

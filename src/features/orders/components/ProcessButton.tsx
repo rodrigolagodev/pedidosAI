@@ -9,10 +9,8 @@ export function ProcessButton({ onClick }: { onClick?: () => void }) {
   const { syncNow } = useSync();
   const [stage, setStage] = useState<'idle' | 'syncing' | 'parsing' | 'done'>('idle');
 
-  // Only show if there are user messages
+  // Only enable if there are user messages
   const hasUserMessages = messages.some(m => m.role === 'user');
-
-  if (!hasUserMessages) return null;
 
   const handleProcess = async () => {
     try {
@@ -40,7 +38,7 @@ export function ProcessButton({ onClick }: { onClick?: () => void }) {
   return (
     <Button
       onClick={handleProcess}
-      disabled={isProcessing || stage !== 'idle'}
+      disabled={!hasUserMessages || isProcessing || stage !== 'idle'}
       className="gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white border-0 transition-all duration-300"
     >
       {stage === 'idle' && (

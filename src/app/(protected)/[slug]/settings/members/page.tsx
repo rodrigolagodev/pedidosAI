@@ -3,7 +3,12 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import { inviteMember, removeMember, updateMemberRole, cancelInvitation } from '@/lib/organizations/actions';
+import {
+  inviteMember,
+  removeMember,
+  updateMemberRole,
+  cancelInvitation,
+} from '@/lib/organizations/actions';
 import { AdminOnly } from '@/components/auth/role-gate';
 import type { Database } from '@/types/database';
 
@@ -89,9 +94,7 @@ export default function MembersPage() {
         .select('id, full_name')
         .in('id', userIds);
 
-      const profilesMap = new Map(
-        profilesData?.map(p => [p.id, p.full_name]) || []
-      );
+      const profilesMap = new Map(profilesData?.map(p => [p.id, p.full_name]) || []);
 
       const formattedMembers = membersData.map(m => ({
         id: m.id,
@@ -201,31 +204,21 @@ export default function MembersPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="container mx-auto py-6 px-4 space-y-8">
       <div>
         <h2 className="text-2xl font-bold text-gray-900">Miembros</h2>
-        <p className="mt-1 text-sm text-gray-600">
-          Gestiona los miembros de tu organización
-        </p>
+        <p className="mt-1 text-sm text-gray-600">Gestiona los miembros de tu organización</p>
       </div>
 
-      {error && (
-        <div className="rounded-md bg-red-50 p-4 text-sm text-red-700">
-          {error}
-        </div>
-      )}
+      {error && <div className="rounded-md bg-red-50 p-4 text-sm text-red-700">{error}</div>}
 
       {success && (
-        <div className="rounded-md bg-green-50 p-4 text-sm text-green-700">
-          {success}
-        </div>
+        <div className="rounded-md bg-green-50 p-4 text-sm text-green-700">{success}</div>
       )}
 
       {invitationLink && (
         <div className="rounded-md bg-blue-50 p-4">
-          <p className="text-sm font-medium text-blue-800 mb-2">
-            Enlace de invitación:
-          </p>
+          <p className="text-sm font-medium text-blue-800 mb-2">Enlace de invitación:</p>
           <div className="flex items-center gap-2">
             <input
               type="text"
@@ -268,7 +261,7 @@ export default function MembersPage() {
                   id="email"
                   type="email"
                   value={inviteEmail}
-                  onChange={(e) => setInviteEmail(e.target.value)}
+                  onChange={e => setInviteEmail(e.target.value)}
                   placeholder="email@ejemplo.com"
                   required
                   className="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
@@ -281,7 +274,7 @@ export default function MembersPage() {
                 <select
                   id="role"
                   value={inviteRole}
-                  onChange={(e) => setInviteRole(e.target.value as MembershipRole)}
+                  onChange={e => setInviteRole(e.target.value as MembershipRole)}
                   className="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
                 >
                   <option value="member">Miembro</option>
@@ -308,19 +301,19 @@ export default function MembersPage() {
           </h3>
         </div>
         <ul className="divide-y divide-gray-200">
-          {members.map((member) => (
+          {members.map(member => (
             <li key={member.id} className="flex items-center justify-between px-6 py-4">
               <div>
-                <p className="font-medium text-gray-900">
-                  {member.user.full_name || 'Sin nombre'}
-                </p>
+                <p className="font-medium text-gray-900">{member.user.full_name || 'Sin nombre'}</p>
                 <p className="text-sm text-gray-500">{member.user.email}</p>
               </div>
               <div className="flex items-center gap-4">
                 <AdminOnly userRole={userRole}>
                   <select
                     value={member.role}
-                    onChange={(e) => handleUpdateRole(member.user_id, e.target.value as MembershipRole)}
+                    onChange={e =>
+                      handleUpdateRole(member.user_id, e.target.value as MembershipRole)
+                    }
                     className="rounded-md border border-gray-300 px-2 py-1 text-sm"
                   >
                     <option value="member">Miembro</option>
@@ -354,7 +347,7 @@ export default function MembersPage() {
               </h3>
             </div>
             <ul className="divide-y divide-gray-200">
-              {invitations.map((invitation) => (
+              {invitations.map(invitation => (
                 <li key={invitation.id} className="flex items-center justify-between px-6 py-4">
                   <div>
                     <p className="font-medium text-gray-900">{invitation.email}</p>
