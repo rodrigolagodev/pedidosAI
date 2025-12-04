@@ -11,7 +11,7 @@ import { revalidatePath } from 'next/cache';
 function getBaseUrl(): string {
   // 1. Check explicit site URL (works in all environments)
   if (process.env.NEXT_PUBLIC_SITE_URL) {
-    return process.env.NEXT_PUBLIC_SITE_URL;
+    return process.env.NEXT_PUBLIC_SITE_URL.trim();
   }
 
   // 2. Vercel auto-provides VERCEL_URL in production/preview
