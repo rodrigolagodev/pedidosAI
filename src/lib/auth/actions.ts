@@ -9,25 +9,11 @@ import { revalidatePath } from 'next/cache';
  * Prioritizes NEXT_PUBLIC_SITE_URL, falls back to VERCEL_URL for Vercel deployments
  */
 function getBaseUrl(): string {
-  // 1. Check explicit site URL (works in all environments)
-  if (process.env.NEXT_PUBLIC_SITE_URL) {
-    return process.env.NEXT_PUBLIC_SITE_URL.trim();
-  }
-
-  // 2. Vercel auto-provides VERCEL_URL in production/preview
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`;
-  }
-
-  // 3. Fallback for local development
   if (process.env.NODE_ENV === 'development') {
     return 'http://localhost:3000';
   }
 
-  // 4. No URL available - this should never happen in production if configured correctly
-  throw new Error(
-    'Missing NEXT_PUBLIC_SITE_URL environment variable. Please configure it in your deployment platform.'
-  );
+  return 'https://pedidos-ai.vercel.app';
 }
 
 export interface AuthActionResult {

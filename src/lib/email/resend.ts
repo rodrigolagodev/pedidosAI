@@ -17,7 +17,10 @@ export async function sendInvitationEmail({
   invitationToken,
   role,
 }: SendInvitationEmailParams) {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+  const siteUrl =
+    process.env.NODE_ENV === 'development'
+      ? 'http://localhost:3000'
+      : 'https://pedidos-ai.vercel.app';
   const inviteUrl = `${siteUrl}/invite/${invitationToken}`;
   const roleText = role === 'admin' ? 'administrador' : 'miembro';
 
