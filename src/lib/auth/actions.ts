@@ -77,7 +77,7 @@ export async function signUp(
       data: {
         full_name: fullName,
       },
-      emailRedirectTo: `${getBaseUrl()}/auth/callback?next=/auth/confirm`,
+      emailRedirectTo: `${getBaseUrl()}/auth/callback`,
     },
   });
 

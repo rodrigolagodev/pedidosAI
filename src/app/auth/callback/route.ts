@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
       token_hash,
     });
     if (!error) {
-      return NextResponse.redirect(`${request.nextUrl.origin}${next}`);
+      return NextResponse.redirect(`${request.nextUrl.origin}/auth/confirm`);
     }
   }
 
