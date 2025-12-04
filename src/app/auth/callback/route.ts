@@ -9,12 +9,16 @@ export async function GET(request: NextRequest) {
   const next = searchParams.get('next') ?? '/dashboard';
   const code = searchParams.get('code');
 
+  // eslint-disable-next-line no-console
+  console.log('Auth callback triggered:', { type, hasTokenHash: !!token_hash, hasCode: !!code });
+
   if (code) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
       return NextResponse.redirect(`${request.nextUrl.origin}${next}`);
     }
+    console.error('Auth code exchange error:', error);
   }
 
   if (token_hash && type) {
@@ -25,8 +29,10 @@ export async function GET(request: NextRequest) {
       token_hash,
     });
     if (!error) {
+      // Redirect to confirmation page which will then redirect to login/dashboard
       return NextResponse.redirect(`${request.nextUrl.origin}/auth/confirm`);
     }
+    console.error('Auth verify OTP error:', error);
   }
 
   // return the user to an error page with some instructions

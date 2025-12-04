@@ -352,8 +352,16 @@ export async function rejectInvitation(token: string): Promise<OrganizationActio
 /**
  * Get invitation details by token
  */
+import { createAdminClient } from '@/lib/supabase/admin';
+
+// ... imports
+
+/**
+ * Get invitation details by token
+ */
 export async function getInvitationByToken(token: string) {
-  const supabase = await createClient();
+  // Use admin client to bypass RLS since the user might not be logged in yet
+  const supabase = createAdminClient();
 
   // Fetch invitation with organization details
   const { data: invitation, error } = await supabase

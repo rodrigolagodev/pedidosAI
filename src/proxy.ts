@@ -12,6 +12,7 @@ const publicRoutes = [
   '/invite',
   '/auth/confirm',
   '/auth/callback',
+  '/auth/auth-code-error',
   '/api/cron', // Cron endpoints handle their own authentication
 ];
 

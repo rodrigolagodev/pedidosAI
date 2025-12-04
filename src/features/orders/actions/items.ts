@@ -30,10 +30,8 @@ export async function saveParsedItems(orderId: string, items: ClassifiedItem[]) 
     throw new Error('Failed to save items');
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const orgSlug =
-    (supabase as any).organization?.slug ||
-    (await getOrderContext(orderId)).order.organization?.slug;
+  const { order } = await getOrderContext(orderId);
+  const orgSlug = order.organization?.slug;
   revalidatePath(`/${orgSlug}/orders/${orderId}`);
 }
 
@@ -105,10 +103,8 @@ export async function reassignItem(itemId: string, supplierId: string | null) {
     throw new Error(`Error al reasignar item: ${error.message}`);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const orgSlug =
-    (item as any).order?.organization?.slug ||
-    (await getOrderContext(item.order_id)).order.organization?.slug;
+  const { order } = await getOrderContext(item.order_id);
+  const orgSlug = order.organization?.slug;
 
   // Revalidate
   revalidatePath(`/${orgSlug}/orders/${item.order_id}`);
@@ -143,10 +139,8 @@ export async function deleteOrderItem(itemId: string) {
   }
 
   if (item) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const orgSlug =
-      (item as any).order?.organization?.slug ||
-      (await getOrderContext(item.order_id)).order.organization?.slug;
+    const { order } = await getOrderContext(item.order_id);
+    const orgSlug = order.organization?.slug;
     revalidatePath(`/${orgSlug}/orders/${item.order_id}/review`);
   }
   return { success: true };
