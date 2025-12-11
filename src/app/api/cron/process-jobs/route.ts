@@ -52,15 +52,15 @@ export async function GET(request: NextRequest) {
 
     // Procesar jobs pendientes (Fallback: solo jobs > 1 minuto)
     // Esto permite reintentar rate limits rápidamente
-    console.error('[Cron] Starting job processing (Fallback mode)...');
+    console.log('[Cron] Starting job processing (Fallback mode)...');
     await JobQueue.processBatch(supabaseAdmin, 1);
-    console.error('[Cron] Job processing completed');
+    console.log('[Cron] Job processing completed');
 
     // Cleanup empty draft orders (older than 7 days)
-    console.error('[Cron] Starting draft cleanup...');
+    console.log('[Cron] Starting draft cleanup...');
     const { cleanupEmptyDrafts } = await import('@/features/orders/actions/sync-orders');
     const cleanupResult = await cleanupEmptyDrafts(supabaseAdmin, 7);
-    console.error(`[Cron] Draft cleanup completed: ${cleanupResult.deletedCount} orders deleted`);
+    console.log(`[Cron] Draft cleanup completed: ${cleanupResult.deletedCount} orders deleted`);
 
     return NextResponse.json({
       success: true,
