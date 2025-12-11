@@ -180,7 +180,18 @@ async function withRetry<T>(fn: () => Promise<T>, maxRetries = 3, baseDelay = 10
   for (let i = 0; i < maxRetries; i++) {
     try {
       return await fn();
-    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      // Don't retry on quota exceeded or validation errors
+      if (
+        error?.status === 429 ||
+        error?.message?.includes('429') ||
+        error?.message?.includes('quota') ||
+        error instanceof z.ZodError
+      ) {
+        throw error;
+      }
+
       if (i === maxRetries - 1) throw error;
 
       const delay = baseDelay * Math.pow(2, i);

@@ -154,7 +154,17 @@ INSTRUCCIONES ADICIONALES:
     });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    console.error('Gemini API Error:', error);
+    const isQuotaError =
+      error?.status === 429 ||
+      error?.status === 503 ||
+      error?.message?.includes('429') ||
+      error?.message?.includes('quota');
+
+    if (isQuotaError) {
+      console.warn('Gemini API Quota Exceeded (429) - returning friendly error');
+    } else {
+      console.error('Gemini API Error:', error);
+    }
 
     // Check for quota exceeded (429) or overloaded (503)
     if (
