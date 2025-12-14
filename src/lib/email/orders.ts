@@ -40,7 +40,7 @@ export async function sendOrderEmail({
   );
 
   const result = await resend.emails.send({
-    from: 'Pedidos <orders@resend.dev>', // Change to your domain in production
+    from: 'Supplai <orders@resend.dev>', // Change to your domain in production
     to: [to],
     subject: `Nuevo pedido de ${organizationName}`,
     html: `
@@ -83,7 +83,7 @@ export async function sendOrderEmail({
             </div>
 
             <p style="margin: 24px 0 0 0; font-size: 14px; color: #64748b;">
-              Este es un mensaje automático enviado desde Pedidos AI.
+              Este es un mensaje automático enviado desde Supplai.
             </p>
           </div>
         </body>

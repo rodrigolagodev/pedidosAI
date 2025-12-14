@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Verificar Email - Pedidos',
+  title: 'Verificar Email - Supplai',
   description: 'Confirma tu dirección de email',
 };
 

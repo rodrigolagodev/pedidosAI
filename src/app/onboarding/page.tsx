@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
 export const metadata = {
-  title: 'Crear Organización - Pedidos',
+  title: 'Crear Organización - Supplai',
   description: 'Crea una nueva organización',
 };
 

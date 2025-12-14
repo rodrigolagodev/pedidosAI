@@ -3,8 +3,8 @@ import { RegisterForm } from '@/components/auth/register-form';
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Registrarse - Pedidos',
-  description: 'Crea tu cuenta en Pedidos',
+  title: 'Registrarse - Supplai',
+  description: 'Crea tu cuenta en Supplai',
 };
 
 export default function RegisterPage() {

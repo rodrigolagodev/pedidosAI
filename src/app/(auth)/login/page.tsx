@@ -3,7 +3,7 @@ import { LoginForm } from '@/components/auth/login-form';
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Iniciar Sesión - Pedidos',
+  title: 'Iniciar Sesión - Supplai',
   description: 'Inicia sesión en tu cuenta de Pedidos',
 };
 

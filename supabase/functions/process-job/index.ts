@@ -232,7 +232,7 @@ serve(async req => {
             </div>
 
             <p style="margin: 24px 0 0 0; font-size: 14px; color: #64748b;">
-              Este es un mensaje automático enviado desde Pedidos AI.
+              Este es un mensaje automático enviado desde Supplai.
             </p>
           </div>
         </body>
@@ -242,7 +242,7 @@ serve(async req => {
     // 5. Send Email via Resend
     console.log(`[EdgeFunction] Sending email to ${supplier.email}`);
     const { data: emailData, error: emailError } = await resend.emails.send({
-      from: 'Pedidos <onboarding@resend.dev>',
+      from: 'Supplai <onboarding@resend.dev>',
       to: [supplier.email],
       subject: `Nuevo pedido de ${organizationName}`,
       html: emailHtml,

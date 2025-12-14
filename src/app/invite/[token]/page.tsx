@@ -8,7 +8,7 @@ interface InvitePageProps {
 }
 
 export const metadata = {
-  title: 'Invitación - Pedidos',
+  title: 'Invitación - Supplai',
   description: 'Acepta la invitación para unirte a una organización',
 };
 

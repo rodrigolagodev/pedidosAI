@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: DashboardPageProps) {
   }
 
   return {
-    title: `${organization.name} - Pedidos`,
+    title: `${organization.name} - Supplai`,
     description: `Dashboard de ${organization.name}`,
   };
 }

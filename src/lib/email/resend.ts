@@ -25,9 +25,9 @@ export async function sendInvitationEmail({
   const roleText = role === 'admin' ? 'administrador' : 'miembro';
 
   const result = await resend.emails.send({
-    from: 'Pedidos <onboarding@resend.dev>', // Change to your domain in production
+    from: 'Supplai <onboarding@resend.dev>', // Change to your domain in production
     to: [to],
-    subject: `Has sido invitado a unirte a ${organizationName} en Pedidos`,
+    subject: `Has sido invitado a unirte a ${organizationName} en Supplai`,
     html: `
       <!DOCTYPE html>
       <html>
@@ -38,13 +38,13 @@ export async function sendInvitationEmail({
         <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
           <div style="background-color: #f8fafc; border-radius: 8px; padding: 32px; margin-bottom: 24px;">
             <h1 style="color: #1e40af; margin: 0 0 16px 0; font-size: 24px;">
-              Has sido invitado a Pedidos
+              Has sido invitado a Supplai
             </h1>
             <p style="margin: 0 0 16px 0;">
               <strong>${inviterName}</strong> te ha invitado a unirte a <strong>${organizationName}</strong> como <strong>${roleText}</strong>.
             </p>
             <p style="margin: 0 0 24px 0;">
-              Pedidos es una aplicación para gestionar pedidos a proveedores de manera eficiente.
+              Supplai es una aplicación para gestionar pedidos a proveedores de manera eficiente.
             </p>
             <a href="${inviteUrl}" style="display: inline-block; background-color: #2563eb; color: white; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 500;">
               Aceptar invitación

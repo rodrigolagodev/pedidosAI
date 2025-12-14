@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import { ConfirmEmailContent } from './confirm-email-content';
 
 export const metadata = {
-  title: 'Confirmar Email - Pedidos',
+  title: 'Confirmar Email - Supplai',
   description: 'Confirma tu dirección de email',
 };
 
