@@ -8,7 +8,8 @@ This guide will help you configure your production environment correctly.
 2. Navigate to: **Settings** → **Environment Variables**
 3. Add a new environment variable:
    - **Name**: `NEXT_PUBLIC_SITE_URL`
-   - **Value**: `https://supplai-web.vercel.app`
+   - **Key**: `NEXT_PUBLIC_SITE_URL`
+   - **Value**: `https://supplai-web.vercel.app` (or your custom domain)
    - **Environment**: Select **Production**, **Preview**, and **Development**
 4. Click **Save**
 
@@ -70,3 +71,15 @@ After setting the environment variable in Vercel:
 
 - **Solution**: The link expires after a short time (5-10 minutes)
 - Request a new confirmation email by registering again with a different email
+
+## Step 5: Configure GitHub Actions (for Cron Jobs)
+
+To ensure the cron jobs work correctly, you must set the following **Repository Variable** in GitHub:
+
+1.  Go to your GitHub repository **Settings**
+2.  Navigate to: **Secrets and variables** → **Actions** → **Variables** tab (NOT Secrets)
+3.  Click **New repository variable**
+4.  Add:
+    - **Name**: `NEXT_PUBLIC_SITE_URL`
+    - **Value**: `https://supplai-web.vercel.app`
+5.  Click **Add variable**

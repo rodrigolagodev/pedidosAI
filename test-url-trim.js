@@ -3,7 +3,7 @@
 // Mock the environment variable with spaces to test the trim logic
 // We need to do this before importing the module if it reads env vars at top level,
 // but getBaseUrl reads them at function call time.
-process.env.NEXT_PUBLIC_SITE_URL = '   https://supplai-web.vercel.app   ';
+process.env.NEXT_PUBLIC_SITE_URL = '   https://supplai-web.vercel.app   '; // Example value for test
 
 // We can't easily import the server action file directly in a standalone node script
 // because of the 'use server' directive and Next.js specific imports.

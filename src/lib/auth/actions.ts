@@ -13,7 +13,7 @@ function getBaseUrl(): string {
     return 'http://localhost:3000';
   }
 
-  return 'https://supplai-web.vercel.app';
+  return process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 }
 
 export interface AuthActionResult {

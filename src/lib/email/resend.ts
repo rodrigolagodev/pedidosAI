@@ -20,7 +20,7 @@ export async function sendInvitationEmail({
   const siteUrl =
     process.env.NODE_ENV === 'development'
       ? 'http://localhost:3000'
-      : 'https://supplai-web.vercel.app';
+      : process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
   const inviteUrl = `${siteUrl}/invite/${invitationToken}`;
   const roleText = role === 'admin' ? 'administrador' : 'miembro';
 
