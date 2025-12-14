@@ -16,7 +16,7 @@ jobs:
       - name: Call cron endpoint
         run: |
           response=$(curl -s -w "\n%{http_code}" -X GET \
-            "https://pedidos-ai.vercel.app/api/cron/process-jobs" \
+            "https://supplai-web.vercel.app/api/cron/process-jobs" \
             -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}")
 
           http_code=$(echo "$response" | tail -n1)
