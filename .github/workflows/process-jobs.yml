@@ -13,6 +13,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Validate Environment
+        run: |
+          if [ -z "${{ vars.NEXT_PUBLIC_SITE_URL }}" ]; then
+            echo "Error: NEXT_PUBLIC_SITE_URL variable is not set in GitHub Repository Settings."
+            echo "Please go to Settings -> Secrets and variables -> Actions -> Variables and add it."
+            exit 1
+          fi
+
       - name: Call cron endpoint
         run: |
           response=$(curl -s -w "\n%{http_code}" -X GET \
