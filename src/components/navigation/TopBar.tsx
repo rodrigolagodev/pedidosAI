@@ -17,7 +17,7 @@ export function TopBar({ organization, organizations, user }: TopBarProps) {
           href={`/${organization.slug}`}
           className="text-sm font-semibold text-foreground hover:text-primary transition-colors"
         >
-          Pedidos
+          Supplai
         </Link>
 
         {/* Org Switcher + User Menu - Right */}
