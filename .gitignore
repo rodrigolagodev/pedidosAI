@@ -27,6 +27,15 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
+# PWA files
+**/public/sw.js
+**/public/workbox-*.js
+**/public/worker-*.js
+**/public/fallback-*.js
+**/public/sw.js.map
+**/public/workbox-*.js.map
+**/public/worker-*.js.map
+
 # Local env files
 .env*.local
 .env
