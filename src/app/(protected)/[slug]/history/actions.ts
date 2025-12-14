@@ -626,6 +626,7 @@ export async function resendSupplierOrder(
     payload: { supplierOrderId },
     status: 'pending',
     attempts: 0,
+    user_id: user.id,
   });
 
   if (jobError) {
