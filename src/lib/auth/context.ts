@@ -123,3 +123,65 @@ export async function getOrderContext(orderId: string) {
     supabase,
   };
 }
+/**
+ * Helper to get organization context and verify access.
+ * Useful for pages/actions that operate on an organization level.
+ */
+export async function getOrganizationContext(organizationIdOrSlug: string) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error('Unauthorized');
+  }
+
+  // Determine if input is UUID or Slug
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+    organizationIdOrSlug
+  );
+
+  let organization;
+
+  if (isUuid) {
+    const { data, error } = await supabase
+      .from('organizations')
+      .select('*')
+      .eq('id', organizationIdOrSlug)
+      .single();
+    if (error) throw error;
+    organization = data;
+  } else {
+    const { data, error } = await supabase
+      .from('organizations')
+      .select('*')
+      .eq('slug', organizationIdOrSlug)
+      .single();
+    if (error) throw error;
+    organization = data;
+  }
+
+  if (!organization) {
+    throw new Error('Organization not found');
+  }
+
+  const { data: membership } = await supabase
+    .from('memberships')
+    .select('id, role, organization_id')
+    .eq('user_id', user.id)
+    .eq('organization_id', organization.id)
+    .single();
+
+  if (!membership) {
+    throw new Error('Forbidden');
+  }
+
+  return {
+    user,
+    organization,
+    membership,
+    supabase,
+  };
+}

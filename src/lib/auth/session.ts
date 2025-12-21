@@ -90,7 +90,7 @@ export async function getUserOrganizations(): Promise<OrganizationContext[]> {
     return [];
   }
 
-  return data.map((org) => ({
+  return data.map(org => ({
     id: org.organization_id,
     name: org.organization_name,
     slug: org.organization_slug,
@@ -102,10 +102,17 @@ export async function getUserOrganizations(): Promise<OrganizationContext[]> {
 /**
  * Get organization context by slug
  */
-export async function getOrganizationBySlug(
-  slug: string
-): Promise<OrganizationContext | null> {
+export async function getOrganizationBySlug(slug: string): Promise<OrganizationContext | null> {
   const supabase = await createClient();
+
+  // Get the current user first
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return null;
+  }
 
   const { data, error } = await supabase
     .from('organizations')
@@ -121,24 +128,14 @@ export async function getOrganizationBySlug(
     `
     )
     .eq('slug', slug)
+    .eq('memberships.user_id', user.id)
     .single();
 
   if (error || !data) {
     return null;
   }
 
-  // Get the membership for the current user
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return null;
-  }
-
-  const membership = Array.isArray(data.memberships)
-    ? data.memberships.find((m) => m.user_id === user.id)
-    : data.memberships;
+  const membership = Array.isArray(data.memberships) ? data.memberships[0] : data.memberships;
 
   if (!membership) {
     return null;
@@ -156,9 +153,7 @@ export async function getOrganizationBySlug(
 /**
  * Get user's role in a specific organization
  */
-export async function getUserRole(
-  organizationId: string
-): Promise<MembershipRole | null> {
+export async function getUserRole(organizationId: string): Promise<MembershipRole | null> {
   const supabase = await createClient();
 
   const { data, error } = await supabase.rpc('get_user_role', {

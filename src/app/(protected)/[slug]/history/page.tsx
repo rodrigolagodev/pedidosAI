@@ -93,10 +93,11 @@ export default async function HistoryPage({
   }
 
   // Fetch data in parallel
+  // Fetch data in parallel
   const [orders, suppliers, members] = await Promise.all([
-    getHistoryOrders(slug, filters),
-    getSuppliersForFilter(slug),
-    getMembersForFilter(slug),
+    getHistoryOrders(org.id, filters),
+    getSuppliersForFilter(org.id),
+    getMembersForFilter(org.id),
   ]);
 
   return (

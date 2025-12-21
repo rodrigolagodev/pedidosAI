@@ -1,5 +1,5 @@
 import { SupplierForm } from '@/features/suppliers/components/supplier-form';
-import { getSupplier } from '@/lib/actions/suppliers';
+import { getSupplierByOrgId } from '@/lib/actions/suppliers';
 import { getOrganizationBySlug } from '@/lib/auth/session';
 import { notFound, redirect } from 'next/navigation';
 
@@ -20,7 +20,7 @@ export default async function EditSupplierPage({
     redirect(`/${slug}/suppliers`);
   }
 
-  const supplier = await getSupplier(slug, id);
+  const supplier = await getSupplierByOrgId(organization.id, id);
 
   if (!supplier) {
     notFound();

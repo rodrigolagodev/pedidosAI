@@ -30,7 +30,7 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
     notFound();
   }
 
-  const recentOrders = await getHistoryOrders(slug, {}, 10);
+  const recentOrders = await getHistoryOrders(organization.id, {}, 10);
 
   return (
     <div className="container mx-auto py-6 px-4 space-y-6">

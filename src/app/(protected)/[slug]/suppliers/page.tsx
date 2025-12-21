@@ -1,4 +1,4 @@
-import { getSuppliers, deleteSupplier } from '@/lib/actions/suppliers';
+import { deleteSupplier, getSuppliersByOrgId } from '@/lib/actions/suppliers';
 import { getOrganizationBySlug } from '@/lib/auth/session';
 import Link from 'next/link';
 import { SupplierListItem } from '@/features/suppliers/components/supplier-list-item';
@@ -14,7 +14,7 @@ export default async function SuppliersPage({ params }: { params: Promise<{ slug
     notFound();
   }
 
-  const suppliers = await getSuppliers(slug);
+  const suppliers = await getSuppliersByOrgId(organization.id);
 
   return (
     <div className="container mx-auto py-6 px-4">

@@ -29,15 +29,12 @@ const supplierSchema = z.object({
 
 export type SupplierInput = z.infer<typeof supplierSchema>;
 
-export async function getSuppliers(slug: string) {
-  const organization = await getOrganizationBySlug(slug);
-  if (!organization) throw new Error('Organization not found');
-
+export async function getSuppliersByOrgId(organizationId: string) {
   const supabase = await createClient();
   const { data: suppliers, error } = await supabase
     .from('suppliers')
     .select('*')
-    .eq('organization_id', organization.id)
+    .eq('organization_id', organizationId)
     .is('deleted_at', null)
     .order('name');
 
@@ -45,20 +42,31 @@ export async function getSuppliers(slug: string) {
   return suppliers;
 }
 
-export async function getSupplier(slug: string, id: string) {
+export async function getSuppliers(slug: string) {
   const organization = await getOrganizationBySlug(slug);
   if (!organization) throw new Error('Organization not found');
 
+  return getSuppliersByOrgId(organization.id);
+}
+
+export async function getSupplierByOrgId(organizationId: string, id: string) {
   const supabase = await createClient();
   const { data: supplier, error } = await supabase
     .from('suppliers')
     .select('*')
-    .eq('organization_id', organization.id)
+    .eq('organization_id', organizationId)
     .eq('id', id)
     .single();
 
   if (error) throw error;
   return supplier;
+}
+
+export async function getSupplier(slug: string, id: string) {
+  const organization = await getOrganizationBySlug(slug);
+  if (!organization) throw new Error('Organization not found');
+
+  return getSupplierByOrgId(organization.id, id);
 }
 
 export async function createSupplier(slug: string, data: SupplierInput) {
